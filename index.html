@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>浮屿 · Fuyu</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <main id="app">
+    <section id="title-screen" class="screen">
+      <img src="assets/logo.svg" alt="浮屿" class="logo">
+      <h1>浮屿</h1>
+      <p class="tagline">漂流向归乡</p>
+      <button id="start-btn" class="btn primary">起航</button>
+      <p id="continue-hint" class="muted hidden">
+        你有一段未完的航行——<button id="continue-btn" class="link">继续</button>
+      </p>
+      <p class="muted" style="margin-top: 2.5rem; letter-spacing: 0.1em;">v0.1 · 第一座岛已点亮</p>
+    </section>
+
+    <section id="game-screen" class="screen hidden">
+      <header id="world-header">
+        <span id="world-name"></span>
+        <span id="rule-badge" class="badge hidden" title="点开查看这座岛的规则">规则</span>
+      </header>
+      <article id="scene-text"></article>
+      <div id="choices"></div>
+      <p id="end-note" class="end-note hidden"></p>
+      <div id="rule-card" class="rule-card hidden">
+        <span id="rule-text"></span>
+      </div>
+      <footer class="game-footer">
+        <button id="restart-btn" class="btn ghost">重新起航</button>
+        <button id="fragments-btn" class="btn ghost">记忆碎片（<span id="fragment-count">0</span>）</button>
+      </footer>
+    </section>
+
+    <section id="fragments-screen" class="screen hidden">
+      <h2>记忆碎片</h2>
+      <ul id="fragment-list"></ul>
+      <button id="back-btn" class="btn ghost">返回</button>
+    </section>
+  </main>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
