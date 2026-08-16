@@ -53,7 +53,3 @@ python -m http.server 8000
 ## 开源协议
 
 [MIT](LICENSE) © 2026 浮屿贡献者
-
-## 作者
-
-见 [AUTHORS.md](AUTHORS.md)。
