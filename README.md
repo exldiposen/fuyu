@@ -19,6 +19,10 @@
 - 进度自动保存在浏览器本地（localStorage）
 - 零依赖、零构建：clone 下来即可运行
 
+## 在线试玩
+
+<https://exldiposen.github.io/fuyu/> —— 由 GitHub Pages 托管，打开即玩，无需任何安装。
+
 ## 快速开始
 
 无需安装任何依赖，任选一种方式启动本地服务器：
