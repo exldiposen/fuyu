@@ -3,46 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#060b15">
+  <meta name="description" content="浮屿 · Fuyu——一款关于规则、记忆与归乡的开源网页叙事游戏。七座岛，一座灯塔，四种结局。">
   <title>浮屿 · Fuyu</title>
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
-  <main id="app">
-    <section id="title-screen" class="screen">
-      <img src="assets/logo.svg" alt="浮屿" class="logo">
-      <h1>浮屿</h1>
-      <p class="tagline">漂流向归乡</p>
-      <button id="start-btn" class="btn primary">起航</button>
-      <p id="continue-hint" class="muted hidden">
-        你有一段未完的航行——<button id="continue-btn" class="link">继续</button>
-      </p>
-      <p class="muted" style="margin-top: 2.5rem; letter-spacing: 0.1em;">v0.1 · 第一座岛已点亮</p>
+<body data-screen="title" data-mood="prologue">
+  <canvas id="sea" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div id="veil" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">跳到正文</a>
+
+  <main id="main">
+    <section id="title-screen" class="screen title-screen">
+      <div class="title-inner">
+        <div id="title-constellation" class="title-constellation" aria-hidden="true"></div>
+        <img class="logo" src="assets/logo.svg" alt="" width="112" height="112">
+        <p class="kicker">FUYU · FLOATING ISLE</p>
+        <h1>浮屿</h1>
+        <p class="tagline">漂流向归乡</p>
+        <p class="title-lede">一座漂流的岛。每座岛都有一条规则。<br>找回记忆碎片，才能记起回家的路。</p>
+        <div class="title-actions">
+          <button id="start-btn" class="btn primary">起航</button>
+          <button id="continue-btn" class="btn ghost hidden">继续航行</button>
+        </div>
+        <p id="title-progress" class="title-progress" aria-live="polite"></p>
+        <p class="title-foot">v1.0 · 一段完整的航线 · <button id="help-btn" class="link">航行须知</button></p>
+      </div>
     </section>
 
-    <section id="game-screen" class="screen hidden">
-      <header id="world-header">
-        <span id="world-name"></span>
-        <span id="rule-badge" class="badge hidden" title="点开查看这座岛的规则">规则</span>
+    <section id="game-screen" class="screen game-screen hidden">
+      <header class="topbar">
+        <button id="chart-btn" class="icon-btn" aria-label="打开海图">海图</button>
+        <div class="island-heading">
+          <span id="island-kicker" class="island-kicker"></span>
+          <h2 id="island-name" class="island-name"></h2>
+        </div>
+        <div class="top-actions">
+          <button id="rule-badge" class="rule-badge hidden" aria-expanded="false">规则</button>
+          <button id="journal-btn" class="icon-btn" aria-label="打开航海日志">日志</button>
+          <button id="sound-btn" class="icon-btn" aria-pressed="false" aria-label="打开环境声">♪</button>
+        </div>
       </header>
-      <article id="scene-text"></article>
-      <div id="choices"></div>
-      <p id="end-note" class="end-note hidden"></p>
-      <div id="rule-card" class="rule-card hidden">
-        <span id="rule-text"></span>
+
+      <div id="scene-plate" class="scene-plate">
+        <div id="rule-card" class="rule-card hidden">
+          <span class="rule-label">规则</span>
+          <p id="rule-text"></p>
+        </div>
+        <article id="scene-text" class="scene-text" tabindex="-1"></article>
+        <div id="echo-hint" class="echo-hint hidden" role="status">回声未落——再走一次同一步。</div>
+        <div id="fold-wrap" class="fold-wrap hidden">
+          <button id="fold-btn" class="fold-btn" type="button"></button>
+          <span class="fold-note">纸会沿着折痕走。</span>
+        </div>
+        <nav id="choices" class="choices" aria-label="选择"></nav>
       </div>
+
       <footer class="game-footer">
-        <button id="restart-btn" class="btn ghost">重新起航</button>
-        <button id="fragments-btn" class="btn ghost">记忆碎片（<span id="fragment-count">0</span>）</button>
+        <span id="fragment-count" class="fragment-count">0 块碎片</span>
+        <button id="restart-btn" class="link">重新起航</button>
       </footer>
     </section>
 
-    <section id="fragments-screen" class="screen hidden">
-      <h2>记忆碎片</h2>
-      <ul id="fragment-list"></ul>
-      <button id="back-btn" class="btn ghost">返回</button>
+    <section id="chart-screen" class="screen chart-screen hidden">
+      <header class="chart-head">
+        <p class="kicker">THE CHART</p>
+        <h2>海图</h2>
+        <p class="chart-sub">七座岛，一座灯塔。</p>
+      </header>
+      <div id="chart" class="chart" role="group" aria-label="岛屿海图"></div>
+      <p id="chart-hint" class="chart-hint" aria-live="polite"></p>
+      <footer class="chart-foot">
+        <button id="chart-back-btn" class="btn ghost">离开海图</button>
+        <button id="chart-journal-btn" class="btn ghost">航海日志</button>
+      </footer>
+    </section>
+
+    <section id="journal-screen" class="screen journal-screen hidden">
+      <header class="journal-head">
+        <div>
+          <p class="kicker">THE LOG</p>
+          <h2>航海日志</h2>
+        </div>
+        <button id="journal-close-btn" class="btn ghost">关闭</button>
+      </header>
+      <div id="journal-tabs" class="journal-tabs" role="tablist" aria-label="日志分类">
+        <button data-tab="fragments" role="tab" aria-selected="true">记忆</button>
+        <button data-tab="rules" role="tab" aria-selected="false">规则</button>
+        <button data-tab="notes" role="tab" aria-selected="false">手记</button>
+        <button data-tab="endings" role="tab" aria-selected="false">结局</button>
+      </div>
+      <div id="journal-body" class="journal-body" role="tabpanel"></div>
+    </section>
+
+    <section id="ending-screen" class="screen ending-screen hidden">
+      <p id="ending-kicker" class="kicker"></p>
+      <h2 id="ending-title" class="ending-title"></h2>
+      <div id="ending-map" class="ending-map" aria-hidden="true"></div>
+      <article id="ending-text" class="ending-text"></article>
+      <div id="ending-glyphs" class="ending-glyphs" aria-hidden="true"></div>
+      <div id="ending-stats" class="ending-stats"></div>
+      <div class="ending-actions">
+        <button id="ending-restart-btn" class="btn primary">再一次起航</button>
+        <button id="ending-journal-btn" class="btn ghost">航海日志</button>
+        <button id="ending-title-btn" class="btn ghost">回到标题</button>
+      </div>
+      <p class="ending-fin">— 浮屿 · 完 —</p>
     </section>
   </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-backdrop" data-modal-close></div>
+    <div class="modal-card" role="document">
+      <h3 id="modal-title" tabindex="-1"></h3>
+      <div id="modal-body"></div>
+      <div id="modal-actions" class="modal-actions"></div>
+    </div>
+  </div>
+
+  <noscript>《浮屿》需要 JavaScript 才能航行。</noscript>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

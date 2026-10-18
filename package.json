@@ -1,0 +1,16 @@
+{
+  "name": "fuyu",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "浮屿 · Fuyu——关于规则、记忆与归乡的开源网页叙事游戏",
+  "license": "MIT",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "validate": "node scripts/validate.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
