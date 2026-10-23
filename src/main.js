@@ -49,11 +49,16 @@ const refs = {
   continueBtn: $("#continue-btn"),
   helpBtn: $("#help-btn"),
 
+  cutIn: $("#cut-in"),
+  cutInWord: $("#cut-in-word"),
+  cutInSub: $("#cut-in-sub"),
+
   islandName: $("#island-name"),
   islandKicker: $("#island-kicker"),
   ruleBadge: $("#rule-badge"),
   ruleCard: $("#rule-card"),
   ruleText: $("#rule-text"),
+  scenePlate: $("#scene-plate"),
   sceneText: $("#scene-text"),
   echoHint: $("#echo-hint"),
   foldWrap: $("#fold-wrap"),
@@ -111,6 +116,7 @@ let lastSceneKey = null;
 let lastIslandId = null;
 let endingRecorded = null;
 let voyageTimer = 0;
+let cutInTimer = 0;
 let autoAudioPending = loadSoundPref();
 let currentStyle = loadStyle();
 applyStyle(currentStyle);
@@ -163,6 +169,19 @@ function voyage() {
   voyageTimer = window.setTimeout(() => {
     document.body.classList.remove("voyaging");
   }, 1200);
+}
+
+function cutIn(word, sub = "FUYU") {
+  if (!refs.cutIn || currentStyle === "calm") return;
+  refs.cutInWord.textContent = word;
+  refs.cutInSub.textContent = sub;
+  refs.cutIn.classList.remove("show");
+  void refs.cutIn.offsetWidth;
+  refs.cutIn.classList.add("show");
+  window.clearTimeout(cutInTimer);
+  cutInTimer = window.setTimeout(() => {
+    refs.cutIn.classList.remove("show");
+  }, 1000);
 }
 
 function scrollTop(smooth = true) {
@@ -269,6 +288,7 @@ function showGame(snapshot) {
     onLocked: (message) => toast(message || "现在还不行。"),
     onFold: fold,
   });
+  refs.scenePlate.dataset.step = String(snapshot.stats.steps + 1).padStart(2, "0");
 
   if (island.ruleKnown) {
     refs.ruleText.textContent = island.rule;
@@ -349,6 +369,7 @@ function showEnding(snapshot) {
     allEndings,
   });
   showScreen("ending");
+  cutIn(ending.title, "ENDING");
   scrollTop(false);
   refs.endingTitle.tabIndex = -1;
   window.setTimeout(() => refs.endingTitle.focus({ preventScroll: true }), 80);
@@ -382,6 +403,7 @@ function choose(index) {
   else if (after.scene?.echo && after.scene.echoPending === index) audio?.chime("echo");
 
   render();
+  if (gained) cutIn("记忆", "MEMORY");
 
   // 回声尚未落下时，把焦点还给同一步，方便键盘再走一次
   if (after.scene?.echo && after.scene.echoPending === index) {
@@ -399,6 +421,7 @@ function openCostPicker(pending) {
       engine.choose(pending.index, { fragmentId });
       audio?.chime("fragment");
       render();
+      cutIn("代价", "SACRIFICE");
     },
     onCancel: () => {
       engine.clearPendingCost();
@@ -413,6 +436,7 @@ function fold() {
   engine.fold();
   audio?.chime("choice");
   render();
+  cutIn("折", "FOLD");
   refs.choices.querySelector("button")?.focus();
 }
 
@@ -428,6 +452,7 @@ function travel(islandId) {
   audio?.chime("arrival");
   voyage();
   render();
+  cutIn(after.island?.name || "靠岸", "ARRIVAL");
 }
 
 function startRun() {
@@ -440,6 +465,7 @@ function startRun() {
   lastSceneKey = null;
   voyage();
   render();
+  cutIn("起航", "DEPARTURE");
 }
 
 function continueRun() {
@@ -455,6 +481,7 @@ function continueRun() {
   lastIslandId = null;
   voyage();
   render();
+  cutIn("接续", "CONTINUE");
   if (loaded.legacy) {
     toast("已接续 v0.1 的航行。");
   }
@@ -817,6 +844,7 @@ async function boot() {
       start: startRun,
       style: setStyle,
       title: openTitle,
+      travel,
       goto(islandId) {
         if (!engine) startRun();
         engine.travel(islandId);

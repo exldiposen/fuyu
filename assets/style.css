@@ -165,6 +165,10 @@ body {
     linear-gradient(180deg, rgba(6, 12, 22, 0.92), rgba(5, 9, 16, 0.96));
 }
 
+.cut-in {
+  display: none;
+}
+
 body.voyaging #veil {
   animation: veil 1.25s ease both;
 }
@@ -375,31 +379,102 @@ h1, h2, h3 {
    -------------------------------------------------------------------------- */
 
 #title-screen {
+  width: min(100% - 3rem, 80rem);
+  max-width: 80rem;
   justify-content: center;
-  text-align: center;
-  align-items: center;
+  text-align: left;
+  align-items: stretch;
+  padding-top: clamp(2rem, 6vh, 4rem);
 }
 
 .title-inner {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: clamp(2rem, 5vw, 5rem);
   align-items: center;
   width: 100%;
 }
 
-.title-constellation {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: -1;
-  width: min(34rem, 86vw);
+.title-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.title-poster {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-height: clamp(28rem, 64vh, 42rem);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(60% 60% at 50% 45%, var(--amber-glow), transparent 70%),
+    rgba(10, 18, 32, 0.28);
+  overflow: hidden;
+}
+
+.title-poster .title-constellation {
+  position: relative;
+  inset: auto;
+  z-index: 2;
+  width: min(84%, 30rem);
   aspect-ratio: 1;
-  transform: translate(-50%, -62%);
-  opacity: 0.68;
+  margin: auto;
+  transform: none;
+  opacity: 0.92;
   pointer-events: none;
-  mask-image: radial-gradient(circle at 50% 50%, #000 26%, transparent 74%);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 26%, transparent 74%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 80%);
+}
+
+.poster-label {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  z-index: 3;
+  color: var(--faint);
+  font-family: var(--sans);
+  font-size: 0.55rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.poster-index {
+  position: absolute;
+  top: 0.1rem;
+  right: 1rem;
+  z-index: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line);
+  font-family: var(--serif);
+  font-size: clamp(5rem, 9vw, 8rem);
+  line-height: 1;
+  opacity: 0.45;
+}
+
+.poster-vertical {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 1.2rem;
+  z-index: 3;
+  color: var(--faint);
+  font-family: var(--serif);
+  font-size: 0.6rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+.poster-word,
+.poster-clock,
+.poster-water,
+.poster-halftone,
+.poster-band {
+  display: none;
 }
 
 .logo-stamp {
@@ -419,16 +494,16 @@ h1, h2, h3 {
 }
 
 .title-inner .kicker {
-  margin-top: 1.5rem;
+  margin-top: 1.2rem;
   color: var(--dim);
 }
 
 #title-screen h1 {
-  margin-top: 0.5rem;
-  font-size: clamp(3.4rem, 12vw, 5.4rem);
-  line-height: 1.06;
-  letter-spacing: 0.42em;
-  text-indent: 0.42em;
+  margin-top: 0.4rem;
+  font-size: clamp(4rem, 8vw, 7.2rem);
+  line-height: 1.02;
+  letter-spacing: 0.28em;
+  text-indent: 0;
   color: var(--ink);
   text-shadow: 0 0 60px rgba(242, 199, 119, 0.12);
 }
@@ -437,24 +512,27 @@ h1, h2, h3 {
   margin-top: 0.6rem;
   color: var(--amber);
   font-size: clamp(0.82rem, 1.6vw, 0.95rem);
-  letter-spacing: 0.5em;
-  text-indent: 0.5em;
+  letter-spacing: 0.34em;
+  text-indent: 0;
 }
 
 .title-lede {
-  margin-top: 2.2rem;
+  width: 100%;
+  max-width: 34rem;
+  margin-top: 1.9rem;
   color: var(--dim);
-  font-size: 0.95rem;
-  line-height: 2.1;
+  font-size: 1rem;
+  line-height: 2;
   letter-spacing: 0.04em;
+  text-align: left;
 }
 
 .title-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1rem;
-  margin-top: 2.6rem;
+  margin-top: 2.2rem;
 }
 
 .title-actions .btn.primary {
@@ -462,7 +540,7 @@ h1, h2, h3 {
 }
 
 .title-progress {
-  margin-top: 2.2rem;
+  margin-top: 1.6rem;
   min-height: 1.5em;
   color: var(--faint);
   font-family: var(--sans);
@@ -471,8 +549,12 @@ h1, h2, h3 {
 }
 
 .title-foot {
-  margin-top: 3.6rem;
+  width: 100%;
+  max-width: 34rem;
+  margin-top: 2.6rem;
+  padding-top: 0.8rem;
   color: var(--faint);
+  border-top: 1px solid var(--line);
   font-family: var(--sans);
   font-size: 0.68rem;
   letter-spacing: 0.16em;
@@ -487,7 +569,7 @@ h1, h2, h3 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.35rem;
   margin-top: 1.3rem;
 }
@@ -1271,6 +1353,25 @@ h1, h2, h3 {
   padding-top: 2rem;
 }
 
+.journal-fragments {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.3rem;
+}
+
+.journal-fragments-side,
+.journal-fragments-main {
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .journal-fragments {
+    grid-template-columns: 23rem minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+}
+
 .journal-map {
   width: min(100%, 23rem);
   aspect-ratio: 1;
@@ -1814,8 +1915,42 @@ h1, h2, h3 {
    -------------------------------------------------------------------------- */
 
 @media (max-width: 900px) {
-  .title-constellation {
+  #title-screen {
+    width: min(100% - 2rem, 80rem);
+  }
+
+  .title-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .title-poster {
     display: none;
+  }
+
+  .title-copy {
+    align-items: center;
+    text-align: center;
+  }
+
+  #title-screen h1 {
+    text-indent: 0.28em;
+  }
+
+  .title-lede {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+
+  .title-actions,
+  .style-picker {
+    justify-content: center;
+  }
+
+  .title-foot {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
   }
 }
 
@@ -1931,6 +2066,36 @@ h1, h2, h3 {
   .title-constellation {
     width: 88vw;
     opacity: 0.38;
+  }
+}
+
+@media (min-width: 1100px) {
+  #game-screen {
+    width: min(100% - 3rem, 52rem);
+    max-width: 52rem;
+  }
+
+  .topbar,
+  #scene-plate,
+  .game-footer {
+    width: 100%;
+    max-width: 46rem;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .chart {
+    width: min(100%, 40rem, 64vh);
+  }
+
+  #journal-screen {
+    width: min(100% - 2.6rem, 56rem);
+    max-width: 56rem;
+  }
+
+  #ending-screen {
+    width: min(100% - 2.6rem, 54rem);
+    max-width: 54rem;
   }
 }
 

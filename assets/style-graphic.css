@@ -87,12 +87,12 @@ html[data-style="azure"] body {
   opacity: 0.075;
 }
 
-/* 静海标题上的星图只作为背景，不显示文字标签 */
-html[data-style="calm"] .title-constellation {
-  opacity: 0.26;
+/* 静海：大幅星图只作为背景，不显示文字标签 */
+html[data-style="calm"] .title-poster .title-constellation {
+  opacity: 0.9;
 }
 
-html[data-style="calm"] .title-constellation .star-glyph {
+html[data-style="calm"] .title-poster .star-glyph {
   display: none;
 }
 
@@ -114,6 +114,78 @@ html[data-style="calm"] .title-constellation .star-glyph {
   100% { opacity: 0; transform: scaleX(1); }
 }
 
+/* 漫画式 cut-in 转场 */
+:is(html[data-style="crimson"], html[data-style="azure"]) .cut-in {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .cut-in.show {
+  visibility: visible;
+  animation: g-cut-fade 0.95s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .cut-in-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--amber);
+  clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);
+  transform: translateX(-105%) skewX(-8deg);
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .cut-in.show .cut-in-bg {
+  animation: g-cut-bg 0.95s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .cut-in-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #050505;
+  transform: skew(-6deg);
+}
+
+#cut-in-word {
+  font-family: var(--display, "Arial Black", "Microsoft YaHei", sans-serif);
+  font-size: clamp(3.5rem, 10vw, 8rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+#cut-in-sub {
+  margin-top: 0.5rem;
+  padding: 0.12rem 0.5rem;
+  color: var(--amber);
+  background: #050505;
+  font-family: var(--mono, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+}
+
+@keyframes g-cut-bg {
+  0% { transform: translateX(-105%) skewX(-8deg); }
+  22% { transform: translateX(0) skewX(-8deg); }
+  74% { transform: translateX(0) skewX(-8deg); }
+  100% { transform: translateX(108%) skewX(-8deg); }
+}
+
+@keyframes g-cut-fade {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* --------------------------------------------------------------------------
    纸张与硬阴影
    -------------------------------------------------------------------------- */
@@ -124,12 +196,12 @@ html[data-style="calm"] .title-constellation .star-glyph {
 }
 
 :is(html[data-style="crimson"], html[data-style="azure"]) #title-screen {
-  width: min(100% - 2.6rem, 52rem);
-  max-width: 52rem;
-  align-items: flex-start;
+  width: min(100% - 3rem, 80rem);
+  max-width: 80rem;
+  align-items: stretch;
   text-align: left;
   justify-content: center;
-  padding-top: clamp(2rem, 7vh, 4.4rem);
+  padding-top: clamp(2rem, 6vh, 4rem);
 }
 
 :is(html[data-style="crimson"], html[data-style="azure"]) #game-screen,
@@ -154,35 +226,236 @@ html[data-style="calm"] .title-constellation .star-glyph {
    -------------------------------------------------------------------------- */
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .title-inner {
-  align-items: flex-start;
-  max-width: 52rem;
+  align-items: center;
+  max-width: 80rem;
 }
 
-:is(html[data-style="crimson"], html[data-style="azure"]) .title-inner::before {
+:is(html[data-style="crimson"], html[data-style="azure"]) .title-copy {
+  align-items: flex-start;
+  text-align: left;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .title-poster {
+  background-color: var(--panel);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1.3px);
+  background-size: 7px 7px;
+  border: 2px solid var(--line-strong);
+  box-shadow: 10px 10px 0 var(--amber);
+  min-height: clamp(30rem, 68vh, 44rem);
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .title-poster::before {
   content: "";
   position: absolute;
-  right: -1rem;
-  top: 8%;
-  z-index: -1;
-  width: 44%;
-  height: 66%;
-  opacity: 0.15;
-  background-image: radial-gradient(var(--amber) 1px, transparent 1.4px);
-  background-size: 7px 7px;
-  clip-path: polygon(8% 0, 100% 0, 100% 82%, 78% 100%, 0 100%, 0 14%);
-  mask-image: linear-gradient(90deg, transparent, #000 38%);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%);
-  transform: rotate(-2deg);
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, transparent 52%, var(--amber-glow));
   pointer-events: none;
 }
 
-:is(html[data-style="crimson"], html[data-style="azure"]) .title-constellation {
-  left: auto;
-  right: -5rem;
-  top: 45%;
-  width: 32rem;
-  transform: translateY(-50%);
-  opacity: 0.32;
+:is(html[data-style="crimson"], html[data-style="azure"]) .title-poster::after {
+  content: "";
+  position: absolute;
+  top: -22%;
+  left: -32%;
+  z-index: 0;
+  width: 82%;
+  height: 144%;
+  background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(255, 255, 255, 0.05) 22px 23px);
+  transform: rotate(8deg);
+  pointer-events: none;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .title-poster .title-constellation {
+  width: min(88%, 32rem);
+  opacity: 0.9;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .poster-label {
+  top: 1rem;
+  left: 1rem;
+  padding: 0.16rem 0.45rem;
+  color: #050505;
+  background: var(--amber);
+  font-family: var(--display);
+  font-weight: 900;
+  transform: skew(-5deg);
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .poster-index {
+  top: 0.1rem;
+  right: 0.4rem;
+  color: var(--amber);
+  -webkit-text-stroke: 0;
+  font-family: var(--display);
+  font-size: clamp(6rem, 10vw, 9rem);
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0.9;
+  text-shadow: 5px 5px 0 #050505;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .poster-vertical {
+  right: 1.1rem;
+  bottom: 1.1rem;
+  color: var(--amber);
+  font-family: var(--display);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.34em;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .poster-word {
+  position: absolute;
+  left: 1rem;
+  bottom: 1.1rem;
+  z-index: 3;
+  display: inline-block;
+  padding: 0.12rem 0.5rem;
+  color: #050505;
+  background: var(--amber);
+  box-shadow: 3px 3px 0 #fff;
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  transform: rotate(-4deg);
+}
+
+/* 潮红：更大的拼贴 */
+html[data-style="crimson"] .poster-halftone {
+  position: absolute;
+  top: 14%;
+  left: 11%;
+  z-index: 0;
+  display: block;
+  width: 68%;
+  aspect-ratio: 1;
+  background-image: radial-gradient(var(--amber) 1.2px, transparent 1.5px);
+  background-size: 7px 7px;
+  border-radius: 50%;
+  opacity: 0.24;
+  mask-image: radial-gradient(circle, #000 38%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle, #000 38%, transparent 72%);
+  pointer-events: none;
+}
+
+html[data-style="crimson"] .poster-band {
+  position: absolute;
+  top: 65%;
+  left: -13%;
+  z-index: 1;
+  display: block;
+  width: 126%;
+  height: 9%;
+  background: var(--amber);
+  box-shadow: 0 0 0 3px #050505;
+  transform: rotate(-7deg);
+  pointer-events: none;
+}
+
+/* 深蓝：钟表与水面 */
+html[data-style="azure"] .poster-clock {
+  position: absolute;
+  top: 12%;
+  left: 14%;
+  z-index: 1;
+  display: block;
+  width: 72%;
+  aspect-ratio: 1;
+  border: 1px solid var(--amber-dim);
+  border-radius: 50%;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+html[data-style="azure"] .poster-clock::before {
+  content: "";
+  position: absolute;
+  inset: 7%;
+  border: 1px dashed var(--amber-dim);
+  border-radius: 50%;
+}
+
+html[data-style="azure"] .clock-hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  width: 2px;
+  background: var(--amber);
+  transform-origin: bottom center;
+}
+
+html[data-style="azure"] .clock-hand.hour {
+  height: 21%;
+  transform: translateX(-50%) rotate(28deg);
+}
+
+html[data-style="azure"] .clock-hand.minute {
+  height: 33%;
+  transform: translateX(-50%) rotate(155deg);
+}
+
+html[data-style="azure"] .clock-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--amber);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+html[data-style="azure"] .poster-water {
+  position: absolute;
+  right: 0;
+  bottom: 5%;
+  left: 0;
+  z-index: 1;
+  display: block;
+  height: 24%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html[data-style="azure"] .poster-water span {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 70%;
+  height: 70%;
+  border: 1px solid var(--amber-dim);
+  border-radius: 50%;
+  opacity: 0.25;
+  transform: translateX(-50%);
+  animation: g-ripple 7s ease-out infinite;
+}
+
+html[data-style="azure"] .poster-water span:nth-child(2) {
+  width: 90%;
+  height: 85%;
+  animation-delay: 2.3s;
+}
+
+html[data-style="azure"] .poster-water span:nth-child(3) {
+  width: 110%;
+  height: 100%;
+  animation-delay: 4.6s;
+}
+
+@keyframes g-ripple {
+  0% { transform: translateX(-50%) scale(0.6); opacity: 0.3; }
+  100% { transform: translateX(-50%) scale(1.2); opacity: 0; }
+}
+
+/* 深蓝：冷光 */
+html[data-style="azure"] .title-poster {
+  background:
+    radial-gradient(60% 60% at 48% 40%, rgba(57, 224, 255, 0.12), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1.3px),
+    #04101a;
+  background-size: auto, 7px 7px, auto;
 }
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .logo-stamp {
@@ -224,7 +497,7 @@ html[data-style="calm"] .title-constellation .star-glyph {
 :is(html[data-style="crimson"], html[data-style="azure"]) #title-screen h1 {
   margin-top: 0.55rem;
   font-family: var(--display);
-  font-size: clamp(4.6rem, 15vw, 8.4rem);
+  font-size: clamp(5rem, 12vw, 10.5rem);
   font-weight: 900;
   line-height: 0.9;
   letter-spacing: -0.02em;
@@ -250,7 +523,8 @@ html[data-style="calm"] .title-constellation .star-glyph {
 }
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .title-lede {
-  max-width: 30rem;
+  width: 100%;
+  max-width: 34rem;
   margin-top: 1.8rem;
   padding: 1rem 1.2rem;
   color: var(--ink-soft);
@@ -315,7 +589,7 @@ html[data-style="calm"] .title-constellation .star-glyph {
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .title-foot {
   width: 100%;
-  max-width: 30rem;
+  max-width: 34rem;
   margin-top: 2.4rem;
   padding-top: 0.8rem;
   color: var(--dim);
@@ -431,7 +705,7 @@ html[data-style="calm"] .title-constellation .star-glyph {
   align-items: end;
   gap: 0.8rem;
   width: 100%;
-  max-width: 42rem;
+  max-width: 46rem;
   padding: 0.8rem 1rem;
   background: #050505;
   border: 2px solid var(--line-strong);
@@ -495,7 +769,7 @@ html[data-style="calm"] .title-constellation .star-glyph {
    -------------------------------------------------------------------------- */
 
 :is(html[data-style="crimson"], html[data-style="azure"]) #scene-plate {
-  max-width: 42rem;
+  max-width: 46rem;
   padding: clamp(1.1rem, 3vw, 1.9rem);
   background-color: var(--panel);
   background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1.3px);
@@ -513,6 +787,26 @@ html[data-style="calm"] .title-constellation .star-glyph {
   background: var(--amber);
   box-shadow: none;
   opacity: 1;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) #scene-plate::after {
+  content: attr(data-step);
+  position: absolute;
+  top: 0.1rem;
+  right: 1rem;
+  z-index: 0;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.11);
+  font-family: var(--display);
+  font-size: clamp(5rem, 9vw, 8rem);
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) #scene-plate > * {
+  position: relative;
+  z-index: 1;
 }
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .scene-text {
@@ -731,7 +1025,7 @@ html[data-style="calm"] .title-constellation .star-glyph {
    -------------------------------------------------------------------------- */
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .game-footer {
-  max-width: 42rem;
+  max-width: 46rem;
   border-top: 2px solid var(--line-strong);
   color: var(--dim);
   font-family: var(--mono);
@@ -763,8 +1057,8 @@ html[data-style="calm"] .title-constellation .star-glyph {
    -------------------------------------------------------------------------- */
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .chart-head {
-  width: min(100%, 38rem, 58vh);
-  max-width: 38rem;
+  width: min(100%, 40rem, 64vh);
+  max-width: 40rem;
   margin: 0;
   padding-bottom: 1rem;
   border-bottom: 2px solid var(--line-strong);
@@ -932,8 +1226,8 @@ html[data-style="calm"] .title-constellation .star-glyph {
 }
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .chart-hint {
-  width: min(100%, 38rem, 58vh);
-  max-width: 38rem;
+  width: min(100%, 40rem, 64vh);
+  max-width: 40rem;
   margin: 1.4rem 0 0;
   padding: 0.8rem 1rem;
   color: var(--ink-soft);
@@ -1378,6 +1672,51 @@ html[data-style="calm"] .title-constellation .star-glyph {
    窄屏
    -------------------------------------------------------------------------- */
 
+@media (min-width: 1100px) {
+  :is(html[data-style="crimson"], html[data-style="azure"]) #game-screen {
+    width: min(100% - 3rem, 52rem);
+    max-width: 52rem;
+  }
+
+  :is(html[data-style="crimson"], html[data-style="azure"]) #journal-screen {
+    width: min(100% - 3rem, 56rem);
+    max-width: 56rem;
+  }
+
+  :is(html[data-style="crimson"], html[data-style="azure"]) #ending-screen {
+    width: min(100% - 3rem, 54rem);
+    max-width: 54rem;
+  }
+}
+
+@media (max-width: 900px) {
+  :is(html[data-style="crimson"], html[data-style="azure"]) .title-copy {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  :is(html[data-style="crimson"], html[data-style="azure"]) #title-screen h1 {
+    text-indent: 0;
+  }
+
+  :is(html[data-style="crimson"], html[data-style="azure"]) .title-lede {
+    margin-right: 0;
+    margin-left: 0;
+    text-align: left;
+  }
+
+  :is(html[data-style="crimson"], html[data-style="azure"]) .title-actions,
+  :is(html[data-style="crimson"], html[data-style="azure"]) .style-picker {
+    justify-content: flex-start;
+  }
+
+  :is(html[data-style="crimson"], html[data-style="azure"]) .title-foot {
+    margin-right: 0;
+    margin-left: 0;
+    text-align: left;
+  }
+}
+
 @media (max-width: 620px) {
   :is(html[data-style="crimson"], html[data-style="azure"]) .screen {
     width: min(100% - 1.6rem, 50rem);
@@ -1385,12 +1724,11 @@ html[data-style="calm"] .title-constellation .star-glyph {
   }
 
   :is(html[data-style="crimson"], html[data-style="azure"]) #title-screen {
-    width: min(100% - 1.6rem, 52rem);
+    width: min(100% - 1.6rem, 80rem);
     padding-top: 1.4rem;
   }
 
-  :is(html[data-style="crimson"], html[data-style="azure"]) .title-inner::before,
-  :is(html[data-style="crimson"], html[data-style="azure"]) .title-constellation {
+  :is(html[data-style="crimson"], html[data-style="azure"]) .title-poster {
     display: none;
   }
 

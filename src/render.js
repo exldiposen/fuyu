@@ -349,11 +349,11 @@ export function renderJournal(snapshot, refs, { tab = "fragments", meta, allFrag
       links,
       animate: false,
     });
-    body.append(map);
-
     const summary = el("p", "journal-summary");
     summary.textContent = `已拾回 ${snapshot.fragments.length} / ${allFragments.length} 块记忆。`;
-    body.append(summary);
+
+    const side = el("div", "journal-fragments-side");
+    side.append(map, summary);
 
     const list = el("div", "fragment-list");
     for (const fragment of allFragments) {
@@ -370,7 +370,12 @@ export function renderJournal(snapshot, refs, { tab = "fragments", meta, allFrag
       card.append(seal, text);
       list.append(card);
     }
-    body.append(list);
+
+    const main = el("div", "journal-fragments-main");
+    main.append(list);
+    const layout = el("div", "journal-fragments");
+    layout.append(side, main);
+    body.append(layout);
   }
 
   if (tab === "rules") {

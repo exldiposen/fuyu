@@ -27,29 +27,57 @@
   <canvas id="sea" aria-hidden="true"></canvas>
   <div class="grain" aria-hidden="true"></div>
   <div id="veil" aria-hidden="true"></div>
+  <div id="cut-in" class="cut-in" aria-hidden="true">
+    <div class="cut-in-bg"></div>
+    <div class="cut-in-text">
+      <span id="cut-in-word"></span>
+      <span id="cut-in-sub"></span>
+    </div>
+  </div>
   <a class="skip-link" href="#main">跳到正文</a>
 
   <main id="main">
     <section id="title-screen" class="screen title-screen">
       <div class="title-inner">
-        <div id="title-constellation" class="title-constellation" aria-hidden="true"></div>
-        <span class="logo-stamp"><img class="logo" src="assets/logo.svg" alt="" width="112" height="112"></span>
-        <p class="kicker">FUYU · FLOATING ISLE</p>
-        <h1>浮屿</h1>
-        <p class="tagline">漂流向归乡</p>
-        <p class="title-lede">一座漂流的岛。每座岛都有一条规则。<br>找回记忆碎片，才能记起回家的路。</p>
-        <div class="title-actions">
-          <button id="start-btn" class="btn primary">起航</button>
-          <button id="continue-btn" class="btn ghost hidden">继续航行</button>
+        <div class="title-copy">
+          <span class="logo-stamp"><img class="logo" src="assets/logo.svg" alt="" width="112" height="112"></span>
+          <p class="kicker">FUYU · FLOATING ISLE</p>
+          <h1>浮屿</h1>
+          <p class="tagline">漂流向归乡</p>
+          <p class="title-lede">一座漂流的岛。每座岛都有一条规则。<br>找回记忆碎片，才能记起回家的路。</p>
+          <div class="title-actions">
+            <button id="start-btn" class="btn primary">起航</button>
+            <button id="continue-btn" class="btn ghost hidden">继续航行</button>
+          </div>
+          <p id="title-progress" class="title-progress" aria-live="polite"></p>
+          <div class="style-picker" role="group" aria-label="界面风格">
+            <span class="style-label">STYLE</span>
+            <button type="button" data-style="calm">静海</button>
+            <button type="button" data-style="crimson">潮红</button>
+            <button type="button" data-style="azure">深蓝</button>
+          </div>
+          <p class="title-foot">v1.2 · 静海 / 潮红 / 深蓝 · <button id="help-btn" class="link">航行须知</button></p>
         </div>
-        <p id="title-progress" class="title-progress" aria-live="polite"></p>
-        <div class="style-picker" role="group" aria-label="界面风格">
-          <span class="style-label">STYLE</span>
-          <button type="button" data-style="calm">静海</button>
-          <button type="button" data-style="crimson">潮红</button>
-          <button type="button" data-style="azure">深蓝</button>
+
+        <div class="title-poster" aria-hidden="true">
+          <span class="poster-halftone"></span>
+          <span class="poster-band"></span>
+          <div id="title-constellation" class="title-constellation"></div>
+          <span class="poster-label">THE CHART · 七岛一塔</span>
+          <span class="poster-index">01</span>
+          <span class="poster-vertical">FUYU</span>
+          <span class="poster-word">归乡</span>
+          <div class="poster-clock">
+            <span class="clock-hand hour"></span>
+            <span class="clock-hand minute"></span>
+            <span class="clock-dot"></span>
+          </div>
+          <div class="poster-water">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </div>
-        <p class="title-foot">v1.1 · 静海 / 潮红 / 深蓝 · <button id="help-btn" class="link">航行须知</button></p>
       </div>
     </section>
 
