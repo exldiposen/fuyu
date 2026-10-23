@@ -8,6 +8,20 @@
   <title>浮屿 · Fuyu</title>
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/style-graphic.css">
+  <script>
+    // 在首屏绘制之前决定风格，避免闪一下旧皮肤
+    (function () {
+      var styles = ["calm", "crimson", "azure"];
+      var saved = null;
+      try { saved = localStorage.getItem("fuyu-style-v1"); } catch (error) {}
+      var style = styles.indexOf(saved) !== -1 ? saved : "crimson";
+      document.documentElement.dataset.style = style;
+      var themeColors = { calm: "#060b15", crimson: "#120406", azure: "#02070d" };
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", themeColors[style] || themeColors.crimson);
+    })();
+  </script>
 </head>
 <body data-screen="title" data-mood="prologue">
   <canvas id="sea" aria-hidden="true"></canvas>
@@ -19,7 +33,7 @@
     <section id="title-screen" class="screen title-screen">
       <div class="title-inner">
         <div id="title-constellation" class="title-constellation" aria-hidden="true"></div>
-        <img class="logo" src="assets/logo.svg" alt="" width="112" height="112">
+        <span class="logo-stamp"><img class="logo" src="assets/logo.svg" alt="" width="112" height="112"></span>
         <p class="kicker">FUYU · FLOATING ISLE</p>
         <h1>浮屿</h1>
         <p class="tagline">漂流向归乡</p>
@@ -29,7 +43,13 @@
           <button id="continue-btn" class="btn ghost hidden">继续航行</button>
         </div>
         <p id="title-progress" class="title-progress" aria-live="polite"></p>
-        <p class="title-foot">v1.0 · 一段完整的航线 · <button id="help-btn" class="link">航行须知</button></p>
+        <div class="style-picker" role="group" aria-label="界面风格">
+          <span class="style-label">STYLE</span>
+          <button type="button" data-style="calm">静海</button>
+          <button type="button" data-style="crimson">潮红</button>
+          <button type="button" data-style="azure">深蓝</button>
+        </div>
+        <p class="title-foot">v1.1 · 静海 / 潮红 / 深蓝 · <button id="help-btn" class="link">航行须知</button></p>
       </div>
     </section>
 
@@ -63,7 +83,10 @@
 
       <footer class="game-footer">
         <span id="fragment-count" class="fragment-count">0 块碎片</span>
-        <button id="restart-btn" class="link">重新起航</button>
+        <div class="game-footer-links">
+          <button id="style-btn" class="link" type="button">风格</button>
+          <button id="restart-btn" class="link" type="button">重新起航</button>
+        </div>
       </footer>
     </section>
 
@@ -99,7 +122,7 @@
     </section>
 
     <section id="ending-screen" class="screen ending-screen hidden">
-      <p id="ending-kicker" class="kicker"></p>
+      <p id="ending-kicker" class="kicker ending-kicker"></p>
       <h2 id="ending-title" class="ending-title"></h2>
       <div id="ending-map" class="ending-map" aria-hidden="true"></div>
       <article id="ending-text" class="ending-text"></article>

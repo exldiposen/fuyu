@@ -15,6 +15,14 @@ import {
 import { SeaScene } from "./sea.js";
 import { Ambience } from "./audio.js";
 import {
+  STYLES,
+  STYLE_LABELS,
+  STYLE_DESCRIPTIONS,
+  loadStyle,
+  applyStyle,
+  saveStyle,
+} from "./theme.js";
+import {
   loadRun,
   saveRun,
   clearRun,
@@ -53,6 +61,7 @@ const refs = {
   choices: $("#choices"),
   fragmentCount: $("#fragment-count"),
   restartBtn: $("#restart-btn"),
+  styleBtn: $("#style-btn"),
   chartBtn: $("#chart-btn"),
   journalBtn: $("#journal-btn"),
   soundBtn: $("#sound-btn"),
@@ -103,6 +112,8 @@ let lastIslandId = null;
 let endingRecorded = null;
 let voyageTimer = 0;
 let autoAudioPending = loadSoundPref();
+let currentStyle = loadStyle();
+applyStyle(currentStyle);
 
 /* ------------------------------------------------------------------ */
 /* 内容整理                                                            */
@@ -157,6 +168,73 @@ function voyage() {
 function scrollTop(smooth = true) {
   const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   window.scrollTo({ top: 0, behavior: smooth && !reduce ? "smooth" : "auto" });
+}
+
+/* ------------------------------------------------------------------ */
+/* 界面风格                                                            */
+/* ------------------------------------------------------------------ */
+
+function updateStyleButtons() {
+  document.querySelectorAll("[data-style]").forEach((button) => {
+    const active = button.dataset.style === currentStyle;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function setStyle(next) {
+  const applied = applyStyle(next);
+  if (applied !== currentStyle) {
+    currentStyle = applied;
+    saveStyle(applied);
+    updateStyleButtons();
+    toast(`界面 · ${STYLE_LABELS[applied]}`);
+  } else {
+    updateStyleButtons();
+  }
+}
+
+function cycleStyle() {
+  const index = STYLES.indexOf(currentStyle);
+  setStyle(STYLES[(index + 1) % STYLES.length]);
+}
+
+function openStyleModal() {
+  const body = document.createElement("div");
+  body.className = "style-modal";
+  const intro = document.createElement("p");
+  intro.className = "modal-text";
+  intro.textContent = "换一种看法。风格会保存在这台设备上，海面与故事不变。";
+  body.append(intro);
+
+  const list = document.createElement("div");
+  list.className = "style-modal-list";
+  for (const key of STYLES) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `style-choice${key === currentStyle ? " active" : ""}`;
+    button.dataset.style = key;
+    button.setAttribute("aria-pressed", key === currentStyle ? "true" : "false");
+    const name = document.createElement("span");
+    name.className = "style-choice-name";
+    name.textContent = STYLE_LABELS[key];
+    const desc = document.createElement("span");
+    desc.className = "style-choice-desc";
+    desc.textContent = STYLE_DESCRIPTIONS[key];
+    button.append(name, desc);
+    button.addEventListener("click", () => {
+      setStyle(key);
+      closeModal();
+    });
+    list.append(button);
+  }
+  body.append(list);
+
+  openModal({
+    title: "界面风格",
+    body,
+    actions: [{ label: "取消", kind: "ghost", onClick: closeModal }],
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -389,6 +467,7 @@ function openTitle() {
   document.title = "浮屿 · Fuyu";
   showScreen("title");
   renderTitle(refs, { meta, allFragments, links });
+  updateStyleButtons();
   refs.startBtn.textContent = meta.endings.length ? "再一次起航" : "起航";
   refs.continueBtn.classList.toggle("hidden", !hasRun());
   scrollTop(false);
@@ -554,7 +633,8 @@ function openHelp() {
     ["代价", "有些岛会收走你的一块记忆。被拿走的，不一定永远失去。"],
     ["回声", "在回声阶，同一步要走两次。第一次是脚步，第二次才算走过。"],
     ["折页", "在纸月，有些路要先把天折起来才会出现。"],
-    ["快捷键", "1–9 选择 · J 日志 · M 海图 · S 环境声 · Esc 返回 · ? 本页"],
+    ["界面风格", "静海 / 潮红 / 深蓝。标题页、页脚的「风格」或 T 键随时切换。"],
+    ["快捷键", "1–9 选择 · J 日志 · M 海图 · S 环境声 · T 风格 · Esc 返回 · ? 本页"],
     ["保存", "进度自动保存在这台设备的浏览器里。清理站点数据会把它一起清掉。"],
   ];
   for (const [title, text] of lines) {
@@ -632,6 +712,12 @@ function onKeydown(event) {
     return;
   }
 
+  if (key === "t") {
+    cycleStyle();
+    event.preventDefault();
+    return;
+  }
+
   if (key === "?" || key === "h") {
     openHelp();
     event.preventDefault();
@@ -646,6 +732,11 @@ function bind() {
   refs.startBtn.addEventListener("click", handleStartClick);
   refs.continueBtn.addEventListener("click", continueRun);
   refs.helpBtn.addEventListener("click", openHelp);
+
+  document.querySelectorAll(".style-picker [data-style]").forEach((button) => {
+    button.addEventListener("click", () => setStyle(button.dataset.style));
+  });
+  refs.styleBtn.addEventListener("click", openStyleModal);
 
   refs.chartBtn.addEventListener("click", openChartFromGame);
   refs.journalBtn.addEventListener("click", () => openJournal("game"));
@@ -724,6 +815,8 @@ async function boot() {
         return data;
       },
       start: startRun,
+      style: setStyle,
+      title: openTitle,
       goto(islandId) {
         if (!engine) startRun();
         engine.travel(islandId);

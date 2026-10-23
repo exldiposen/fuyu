@@ -402,6 +402,10 @@ h1, h2, h3 {
   -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 26%, transparent 74%);
 }
 
+.logo-stamp {
+  display: block;
+}
+
 .logo {
   width: clamp(5.4rem, 13vw, 7rem);
   height: auto;
@@ -477,6 +481,100 @@ h1, h2, h3 {
 .title-foot .link {
   color: var(--dim);
   font-size: inherit;
+}
+
+.style-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 1.3rem;
+}
+
+.style-picker .style-label {
+  margin-right: 0.35rem;
+  color: var(--faint);
+  font-family: var(--sans);
+  font-size: 0.56rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.style-picker button {
+  padding: 0.28rem 0.65rem;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.style-picker button:hover {
+  color: var(--amber);
+  border-color: var(--amber-dim);
+}
+
+.style-picker button.active {
+  color: var(--amber);
+  border-color: var(--amber);
+  background: var(--amber-glow);
+}
+
+.style-modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.style-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  color: var(--ink-soft);
+  background: rgba(255, 255, 255, 0.018);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--amber-dim);
+  font-family: var(--serif);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.style-choice:hover {
+  border-color: var(--amber-dim);
+  background: var(--amber-glow);
+  color: var(--ink);
+}
+
+.style-choice.active {
+  color: #120d06;
+  background: var(--amber);
+  border-color: var(--amber);
+}
+
+.style-choice-name {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+}
+
+.style-choice-desc {
+  color: var(--dim);
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+}
+
+.style-choice.active .style-choice-desc {
+  color: rgba(18, 13, 6, 0.72);
 }
 
 /* --------------------------------------------------------------------------
@@ -833,6 +931,12 @@ h1, h2, h3 {
 
 .game-footer .link:hover {
   color: var(--amber);
+}
+
+.game-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
 }
 
 /* --------------------------------------------------------------------------
