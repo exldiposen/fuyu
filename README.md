@@ -107,6 +107,7 @@ python -m http.server 8000
 | `docs/WORLD_RULES.md` | 如何为《浮屿》写一座新岛 |
 | `docs/ROADMAP.md` | 路线图与贡献记录 |
 | `docs/CHANGELOG.md` | 版本记录 |
+| `docs/HANDOVER.md` | 交接文档：现状、架构、发布、已知问题与检查清单 |
 
 ## 开发与校验
 
@@ -121,6 +122,8 @@ npm start          # 本地服务器
 ## 参与贡献
 
 我们非常欢迎新岛屿、新规则、新碎片。内容全部以 JSON 数据承载，不需要会写代码也能参与。请先阅读 [docs/WORLD_RULES.md](docs/WORLD_RULES.md)。
+
+接手项目、排查发布或继续做界面，请先读 [docs/HANDOVER.md](docs/HANDOVER.md)。
 
 - 内容必须是原创的；不要搬运任何受版权保护的角色、文本、画面或音乐。
 - 不要提交任何个人信息、隐私数据或真实住址。
