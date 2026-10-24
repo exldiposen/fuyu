@@ -452,20 +452,6 @@ export function renderEnding(snapshot, refs, { meta, allFragments, links, allEnd
   refs.endingKicker.textContent = ending.kicker || "结局";
   refs.endingTitle.textContent = ending.title;
 
-  // 结局 CG 横幅（有则展示，无则隐藏）
-  if (refs.endingCg) {
-    refs.endingCg.replaceChildren();
-    if (ending.cg) {
-      const image = el("img");
-      image.src = `assets/cg/cg-${ending.cg}.jpg`;
-      image.alt = `${ending.title} 结局插画`;
-      refs.endingCg.append(image);
-      refs.endingCg.classList.remove("hidden");
-    } else {
-      refs.endingCg.classList.add("hidden");
-    }
-  }
-
   const prose = refs.endingText;
   prose.replaceChildren();
   for (const [index, line] of (ending.text || []).entries()) {

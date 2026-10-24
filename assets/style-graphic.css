@@ -1589,29 +1589,6 @@ html[data-style="azure"] .title-poster {
   font-family: var(--mono);
 }
 
-/* CG 层：潮红偏暖硬朗，深蓝偏冷收敛；都保持轻度统一调色 */
-:is(html[data-style="crimson"]) .cg-layer img,
-:is(html[data-style="crimson"]) .ending-cg img {
-  filter: saturate(1.04) contrast(1.1) brightness(0.97);
-}
-
-:is(html[data-style="azure"]) .cg-layer img,
-:is(html[data-style="azure"]) .ending-cg img {
-  filter: saturate(0.82) hue-rotate(-6deg) contrast(1.06) brightness(0.92);
-}
-
-:is(html[data-style="crimson"], html[data-style="azure"]) .ending-cg {
-  border: 2px solid var(--line-strong);
-}
-
-:is(html[data-style="crimson"]) .ending-cg {
-  box-shadow: 6px 6px 0 var(--amber);
-}
-
-:is(html[data-style="azure"]) .ending-cg {
-  box-shadow: 0 0 34px rgba(127, 184, 216, 0.18);
-}
-
 :is(html[data-style="crimson"], html[data-style="azure"]) .ending-actions {
   justify-content: flex-start;
 }

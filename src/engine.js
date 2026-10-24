@@ -488,7 +488,6 @@ class Engine {
             text: scene.text || [],
             echo: Boolean(scene.echo),
             echoPending: this.state.echo,
-            cg: scene.cg || null,
             fold: scene.fold
               ? {
                   label: scene.fold.label || "折起来",

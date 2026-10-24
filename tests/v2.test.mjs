@@ -1,14 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createEngine } from "../src/engine.js";
 
 const data = JSON.parse(
   readFileSync(new URL("../data/worlds.v2.json", import.meta.url), "utf8")
 );
-
-const cgRoot = fileURLToPath(new URL("../assets/cg/", import.meta.url));
 
 function newRun() {
   const engine = createEngine(data);
@@ -40,27 +38,20 @@ function throughPrologue(engine) {
   return engine;
 }
 
-test("v2 结构：十一世界 / 九岛一塔 / 十碎片 / CG 文件齐全", () => {
+test("v2 结构：十一世界 / 九岛一塔 / 十碎片", () => {
   assert.equal(data.worlds.length, 11);
   const chartIslands = data.worlds.filter((w) => w.chart && !w.center);
   assert.equal(chartIslands.length, 9);
   assert.equal(data.worlds.filter((w) => w.center).length, 1);
 
   const fragmentIds = new Set();
-  const cgIds = new Set();
   for (const world of data.worlds) {
     for (const scene of Object.values(world.scenes || {})) {
       if (scene.fragment?.id) fragmentIds.add(scene.fragment.id);
-      if (scene.cg) cgIds.add(scene.cg);
     }
   }
   assert.equal(fragmentIds.size, 10);
-  for (const ending of data.endings) {
-    if (ending.cg) cgIds.add(ending.cg);
-  }
-  for (const id of cgIds) {
-    assert.ok(existsSync(`${cgRoot}cg-${id}.jpg`), `缺少 CG 文件：cg-${id}.jpg`);
-  }
+  assert.equal(data.endings.length, 4);
 });
 
 test("v2 序章：登场名场面的三条分支各留一条线索", () => {

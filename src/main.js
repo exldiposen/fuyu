@@ -62,9 +62,6 @@ const refs = {
   cutInWord: $("#cut-in-word"),
   cutInSub: $("#cut-in-sub"),
 
-  cgLayer: $("#cg-layer"),
-  cgImage: $("#cg-image"),
-
   islandName: $("#island-name"),
   islandKicker: $("#island-kicker"),
   ruleBadge: $("#rule-badge"),
@@ -94,7 +91,6 @@ const refs = {
 
   endingKicker: $("#ending-kicker"),
   endingTitle: $("#ending-title"),
-  endingCg: $("#ending-cg"),
   endingText: $("#ending-text"),
   endingMap: $("#ending-map"),
   endingGlyphs: $("#ending-glyphs"),
@@ -216,26 +212,6 @@ function cutIn(word, sub = "FUYU", kind = "minor") {
   cutInTimer = window.setTimeout(() => {
     refs.cutIn.classList.remove("show");
   }, 1000);
-}
-
-/* 全屏 CG：进入标注了 cg 的场景时展示，点击 / 回车收起 */
-let cgOpen = false;
-
-function showCg(id) {
-  if (!refs.cgLayer || !id) return;
-  refs.cgImage.src = `assets/cg/cg-${id}.jpg`;
-  refs.cgImage.alt = "";
-  refs.cgLayer.classList.remove("hidden");
-  // 用定时器而非 rAF：后台标签页里 rAF 会被挂起，CG 会迟迟不显形
-  window.setTimeout(() => refs.cgLayer.classList.add("show"), 30);
-  cgOpen = true;
-}
-
-function dismissCg() {
-  if (!cgOpen) return;
-  cgOpen = false;
-  refs.cgLayer.classList.remove("show");
-  window.setTimeout(() => refs.cgLayer.classList.add("hidden"), 440);
 }
 
 function scrollTop(smooth = true) {
@@ -364,7 +340,6 @@ function showGame(snapshot) {
   if (lastSceneKey !== sceneKey) {
     lastSceneKey = sceneKey;
     scrollTop();
-    if (snapshot.scene.cg) showCg(snapshot.scene.cg);
     window.setTimeout(() => {
       if (isModalOpen()) return; // 代价选择器打开时，不要抢走焦点
       refs.sceneText.focus({ preventScroll: true });
@@ -799,14 +774,6 @@ function isModalOpen() {
 }
 
 function onKeydown(event) {
-  if (cgOpen) {
-    if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
-      dismissCg();
-      event.preventDefault();
-    }
-    return;
-  }
-
   if (event.key === "Escape") {
     if (isModalOpen()) {
       closeModal();
@@ -926,8 +893,6 @@ function bind() {
   $("#modal").addEventListener("click", (event) => {
     if (event.target.matches("[data-modal-close]")) closeModal();
   });
-
-  refs.cgLayer.addEventListener("click", dismissCg);
 
   document.addEventListener("keydown", onKeydown);
 }
