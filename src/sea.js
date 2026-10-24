@@ -61,6 +61,18 @@ const PALETTES = {
     stars: 0.25, waves: 0.8, lighthouse: false, moon: false, rings: false,
     wakes: true, hanging: false, paper: false,
   },
+  vow: {
+    skyTop: "#120e12", skyBottom: "#282028", seaTop: "#1c1420", seaBottom: "#080508",
+    glow: "#e0c0a8", glowAlpha: 0.18, fog: "#c8b8c4", fogAlpha: 0.08,
+    stars: 0.3, waves: 0.42, lighthouse: false, moon: false, rings: false,
+    wakes: false, hanging: true, paper: false,
+  },
+  fold: {
+    skyTop: "#0a1218", skyBottom: "#14262e", seaTop: "#102028", seaBottom: "#04080c",
+    glow: "#9fd0d8", glowAlpha: 0.15, fog: "#a8c4cc", fogAlpha: 0.07,
+    stars: 0.5, waves: 0.22, lighthouse: false, moon: false, rings: false,
+    wakes: true, hanging: false, paper: false,
+  },
   finale: {
     skyTop: "#080b15", skyBottom: "#121a2a", seaTop: "#0a1220", seaBottom: "#04060c",
     glow: "#f6cf7a", glowAlpha: 0.24, fog: "#bfc8d8", fogAlpha: 0.06,

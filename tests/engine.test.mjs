@@ -97,6 +97,29 @@ function playAll({ refuseScale = false } = {}) {
   go(engine, 0); // 收好纸人
   go(engine, 0); // 回到海图
 
+  // 重诺屿：许愿（回声 × 代价）
+  engine.travel("chongnuo");
+  go(engine, 0); // 看那些绳结
+  go(engine, 0); // 向礁石深处走（进入回声门）
+  engine.choose(0); // 第一遍：给海听
+  engine.choose(0); // 第二遍：打开代价选择器
+  engine.choose(0, { fragmentId: "frag-rain" }); // 押上一块记忆
+  go(engine, 0); // 走上礁石路
+  go(engine, 0); // 听完了，继续走（拿到碎片）
+  go(engine, 0); // 离开重诺屿
+  go(engine, 0); // 回到海图
+
+  // 叠浪：折页 × 回声
+  engine.travel("dielang");
+  go(engine, 0); // 沿着折痕
+  engine.fold(); // 折起脚下这层海
+  go(engine, 0); // 踏上折起的路（回声）
+  go(engine, 0); // 向上一层（回声）
+  go(engine, 0); // 继续向上（回声）
+  go(engine, 0); // 伸手进浪墙（拿到碎片）
+  go(engine, 0); // 从浪的另一侧下去
+  go(engine, 0); // 回到海图
+
   // 归潮
   engine.travel("guichao");
   go(engine, 0); // 走近看
@@ -311,16 +334,17 @@ test("灯塔：至少靠岸四座岛才会从雾里出现", () => {
   assert.equal(engine.chartModel().find((node) => node.center).locked, false);
 });
 
-test("完整航线：八块碎片，抵达归乡", () => {
+test("完整航线：十块碎片，抵达归乡", () => {
   const engine = playAll();
-  assert.equal(engine.snapshot().stats.islands, 7);
-  assert.equal(engine.snapshot().stats.fragments, 8);
-  assert.equal(engine.snapshot().rules.length, 7);
+  assert.equal(engine.snapshot().stats.islands, 9);
+  assert.equal(engine.snapshot().stats.fragments, 10);
+  assert.equal(engine.snapshot().stats.totalFragments, 10);
+  assert.equal(engine.snapshot().rules.length, 9);
 
   enterFinale(engine);
   const choice = engine.snapshot();
   assert.equal(choice.scene.id, "f-choice");
-  assert.equal(choice.rules.length, 8);
+  assert.equal(choice.rules.length, 10);
   assert.equal(choice.choices.length, 4);
   assert.equal(choice.choices[0].label, "「回家。」");
   assert.equal(choice.choices[0].enabled, true);
@@ -329,7 +353,7 @@ test("完整航线：八块碎片，抵达归乡", () => {
   const ending = engine.snapshot();
   assert.equal(ending.screen, "ending");
   assert.equal(ending.ending.id, "home");
-  assert.equal(ending.stats.fragments, 8);
+  assert.equal(ending.stats.fragments, 10);
 });
 
 test("欠海的账：拒绝付款后，要先还账才能回家", () => {
@@ -384,7 +408,7 @@ test("存档：v2 往返不丢状态", () => {
   const snap = restored.snapshot();
   assert.equal(snap.screen, "ending");
   assert.equal(snap.ending.id, "home");
-  assert.equal(snap.stats.fragments, 8);
+  assert.equal(snap.stats.fragments, 10);
   assert.equal(snap.stats.steps, engine.snapshot().stats.steps);
 });
 
@@ -414,11 +438,11 @@ test("损坏或陌生的存档会退回海图，而不是崩溃", () => {
   assert.equal(engine.screen, "chart");
 });
 
-test("海图：七座岛加一座灯塔，灯塔默认锁着", () => {
+test("海图：九座岛加一座灯塔，灯塔默认锁着", () => {
   const engine = newRun();
   const chart = engine.chartModel();
-  assert.equal(chart.length, 8);
-  assert.equal(engine.snapshot().stats.totalIslands, 7);
+  assert.equal(chart.length, 10);
+  assert.equal(engine.snapshot().stats.totalIslands, 9);
   assert.equal(chart.filter((node) => node.center).length, 1);
   assert.equal(chart.find((node) => node.center).locked, true);
 
@@ -440,4 +464,160 @@ test("手记与规则都去重", () => {
   go(engine, 0); // 回静水
   go(engine, 0); // 雨（再次进入同一场景）
   assert.equal(engine.snapshot().notes.length, 1);
+});
+
+test("重诺屿：许愿要说两遍，且真的押走一块碎片", () => {
+  const engine = newRun();
+  go(engine, 1); // 船板刻痕
+  engine.travel("chongnuo");
+  go(engine, 0); // 看那些绳结
+  go(engine, 0); // 向礁石深处走
+
+  // 回声 × 代价：第一遍只是被海听见
+  let snap = engine.choose(0);
+  assert.equal(snap.scene.id, "z-gate");
+  assert.equal(snap.scene.echoPending, 0);
+  assert.equal(snap.pendingCost, null);
+
+  // 第二遍才打开代价选择器
+  snap = engine.choose(0);
+  assert.deepEqual(snap.pendingCost, { index: 0, count: 1 });
+
+  snap = engine.choose(0, { fragmentId: "frag-scratch" });
+  assert.equal(snap.scene.id, "z-vow");
+  assert.equal(snap.fragments.length, 0);
+  assert.equal(snap.lostFragments.length, 1);
+  assert.ok(snap.flags.includes("vow_made"));
+
+  go(engine, 0); // 走上礁石路
+  go(engine, 0); // 木匣（拿到碎片）
+  snap = engine.snapshot();
+  assert.ok(snap.fragments.some((fragment) => fragment.id === "frag-vow"));
+  assert.ok(snap.island.ruleKnown);
+  go(engine, 0);
+  go(engine, 0);
+  assert.equal(engine.screen, "chart");
+});
+
+test("重诺屿：不许愿也能从水里过去，照样拿到碎片", () => {
+  const engine = newRun();
+  engine.travel("chongnuo");
+  go(engine, 0); // 看那些绳结
+  go(engine, 0); // 向礁石深处走
+
+  const snap = engine.snapshot();
+  assert.equal(snap.choices[0].enabled, false, "空手时代价选项应锁定");
+  assert.match(snap.choices[0].reason, /记忆还不够/);
+
+  go(engine, 1); // 不许愿，蹚水过去（回声：走两遍）
+  let after = engine.snapshot();
+  assert.equal(after.scene.id, "z-wade");
+  assert.ok(after.notes.some((note) => note.id === "obs-wade"));
+  assert.ok(!after.flags.includes("vow_made"));
+
+  go(engine, 0); // 继续向深处走
+  go(engine, 0); // 木匣（拿到碎片）
+  after = engine.snapshot();
+  assert.ok(after.fragments.some((fragment) => fragment.id === "frag-vow"));
+});
+
+test("叠浪：先折页，折起的路要走两遍；一步跳下去会回到起点", () => {
+  const engine = newRun();
+  engine.travel("dielang");
+  go(engine, 0); // 沿着折痕
+
+  // 不折页就没有路
+  let snap = engine.snapshot();
+  assert.equal(snap.scene.id, "d-crease");
+  assert.equal(snap.choices.length, 0);
+
+  engine.fold();
+  snap = engine.snapshot();
+  assert.equal(snap.choices.length, 1);
+  go(engine, 0); // 踏上折起的路
+
+  // 折起的路是回声路：一步要踩两遍
+  snap = engine.choose(0);
+  assert.equal(snap.scene.id, "d-path");
+  assert.equal(snap.scene.echoPending, 0);
+
+  // 抄近路会被浪收回去，落回起点
+  go(engine, 0); // 向上一层（踩实）
+  snap = go(engine, 1); // 试着一步跳下去（踩实后跳）
+  assert.equal(snap.scene.id, "d-jump");
+  assert.ok(snap.notes.some((note) => note.id === "obs-singlestep"));
+  go(engine, 0); // 重新踏上折起的路
+  assert.equal(engine.snapshot().scene.id, "d-path");
+
+  go(engine, 0); // 向上一层
+  go(engine, 0); // 继续向上
+  go(engine, 0); // 伸手进浪墙
+  snap = engine.snapshot();
+  assert.ok(snap.fragments.some((fragment) => fragment.id === "frag-fold"));
+  assert.ok(snap.island.ruleKnown);
+  go(engine, 0); // 从浪的另一侧下去
+  go(engine, 0); // 回到海图
+  assert.equal(engine.screen, "chart");
+});
+
+test("存档：只存 id，不存正文；恢复时从数据重新水化", () => {
+  const engine = newRun();
+  go(engine, 1); // frag-scratch
+  engine.travel("jingmo");
+  go(engine, 1); // 安静地走近
+  go(engine, 0); // s-gift → frag-lamp
+  const saved = engine.serialize();
+
+  // 序列化里只有 id 和 returned 标志，没有正文
+  assert.deepEqual(saved.state.fragments.map((fragment) => fragment.id), ["frag-scratch", "frag-lamp"]);
+  assert.ok(saved.state.fragments.every((fragment) => Object.keys(fragment).join(",") === "id,returned"));
+
+  // 改动 worlds.json 文案后，恢复的存档读到的是新文案
+  const revised = JSON.parse(JSON.stringify(data));
+  const jingmo = revised.worlds.find((world) => world.id === "jingmo");
+  jingmo.scenes["s-gift"].fragment.text = "有人换了一盏新灯等我。";
+  const revisedEngine = createEngine(revised);
+  revisedEngine.restore(saved);
+  const restored = revisedEngine.snapshot();
+  assert.equal(restored.fragments.length, 2);
+  assert.equal(restored.fragments[1].text, "有人换了一盏新灯等我。");
+  assert.deepEqual(restored.fragments[1].star, [50, 28]);
+
+  // 内容改版后消失的碎片：静默丢弃，不崩溃
+  const ghost = JSON.parse(JSON.stringify(saved));
+  ghost.state.fragments = [{ id: "frag-gone", returned: false }, "frag-scratch"];
+  const ghostEngine = createEngine(data);
+  ghostEngine.restore(ghost);
+  const ghostSnap = ghostEngine.snapshot();
+  assert.deepEqual(ghostSnap.fragments.map((fragment) => fragment.id), ["frag-scratch"]);
+});
+
+test("存档：旧 v2 存档（完整对象形态）依然可以恢复", () => {
+  const engine = createEngine(data);
+  engine.restore({
+    v: 2,
+    state: {
+      islandId: "jingmo",
+      sceneId: "s-gift",
+      fragments: [{ id: "frag-lamp", text: "旧存档里的灯", glyph: "灯", star: [50, 28], returned: true }],
+      lost: [{ id: "frag-scratch", text: "旧存档里的刻痕" }],
+      notes: [{ id: "obs-chart", text: "旧存档里的手记" }],
+      flags: [],
+      rules: ["jingmo"],
+      visited: ["jingmo"],
+      ending: null,
+      steps: 3,
+      atChart: false,
+    },
+  });
+  const snap = engine.snapshot();
+  assert.equal(snap.island.id, "jingmo");
+  assert.equal(snap.fragments.length, 1);
+  assert.equal(snap.fragments[0].id, "frag-lamp");
+  assert.equal(snap.fragments[0].returned, true);
+  assert.equal(snap.lostFragments.length, 1);
+  assert.equal(snap.lostFragments[0].id, "frag-scratch");
+  assert.equal(snap.notes.length, 1);
+  assert.equal(snap.notes[0].id, "obs-chart");
+  assert.equal(snap.stats.steps, 3);
 });

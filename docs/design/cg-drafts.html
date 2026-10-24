@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG 草稿 · 抽卡池</title>
+<style>
+  :root { --bg:#060a12; --card:#0c1320; --line:rgba(216,221,232,.14); --ink:#d8dee8; --dim:#93a0b4; --warm:#f2c777; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--ink); font-family:"Inter","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif; line-height:1.7; padding:28px clamp(14px,4vw,48px) 60px; }
+  header { max-width:1180px; margin:0 auto 24px; }
+  .kicker { font-size:11px; letter-spacing:.32em; color:var(--dim); }
+  h1 { font-size:clamp(20px,3vw,26px); font-weight:500; letter-spacing:.12em; margin:6px 0 4px; }
+  .sub { color:var(--dim); font-size:13px; }
+  main { max-width:1180px; margin:0 auto; }
+  section { margin-bottom:34px; }
+  h2 { font-size:15px; font-weight:500; letter-spacing:.08em; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:14px; }
+  h2 span { color:var(--dim); font-weight:400; font-size:12px; margin-left:10px; }
+  .row { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+  figure { background:var(--card); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  figure img { width:100%; display:block; }
+  figcaption { padding:8px 12px; color:var(--dim); font-size:11px; font-family:Consolas,monospace; }
+</style>
+</head>
+<body>
+  <header>
+    <p class="kicker">FUYU · NINE LAMPS — CG DRAFTS</p>
+    <h1>CG 草稿 · 抽卡池</h1>
+    <p class="sub">由 scripts/gacha.mjs 自动生成。挑中的图告诉我文件名，我负责后期调色、裁水印与接入。</p>
+  </header>
+  <main>
+    <section>
+      <h2>prologue <span>序章 · 雾海孤舟捧火的少年（横幅）</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/prologue-s11.jpg" alt="prologue 草稿" loading="lazy"><figcaption>prologue-s11.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/prologue-s23.jpg" alt="prologue 草稿" loading="lazy"><figcaption>prologue-s23.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/prologue-s31.jpg" alt="prologue 草稿" loading="lazy"><figcaption>prologue-s31.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/prologue-s7.jpg" alt="prologue 草稿" loading="lazy"><figcaption>prologue-s7.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>bow-light <span>登场 · 船头的光之少女（第一轮全军覆没：模型画成背光黑影。第二轮把发光要求放到提示词最前并加强）</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/bow-light-s101.jpg" alt="bow-light 草稿" loading="lazy"><figcaption>bow-light-s101.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/bow-light-s102.jpg" alt="bow-light 草稿" loading="lazy"><figcaption>bow-light-s102.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/bow-light-s103.jpg" alt="bow-light 草稿" loading="lazy"><figcaption>bow-light-s103.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/bow-light-s104.jpg" alt="bow-light 草稿" loading="lazy"><figcaption>bow-light-s104.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/bow-light-s14.jpg" alt="bow-light 草稿" loading="lazy"><figcaption>bow-light-s14.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/bow-light-s27.jpg" alt="bow-light 草稿" loading="lazy"><figcaption>bow-light-s27.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/bow-light-s5.jpg" alt="bow-light 草稿" loading="lazy"><figcaption>bow-light-s5.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/bow-light-s9.jpg" alt="bow-light 草稿" loading="lazy"><figcaption>bow-light-s9.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>dengli-face <span>灯璃定妆 · 捧灯近景（唯一需要清晰脸的图，从这批里定一张）</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/dengli-face-s33.jpg" alt="dengli-face 草稿" loading="lazy"><figcaption>dengli-face-s33.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/dengli-face-s48.jpg" alt="dengli-face 草稿" loading="lazy"><figcaption>dengli-face-s48.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/dengli-face-s52.jpg" alt="dengli-face 草稿" loading="lazy"><figcaption>dengli-face-s52.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/dengli-face-s61.jpg" alt="dengli-face 草稿" loading="lazy"><figcaption>dengli-face-s61.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/dengli-face-s77.jpg" alt="dengli-face 草稿" loading="lazy"><figcaption>dengli-face-s77.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/dengli-face-s88.jpg" alt="dengli-face 草稿" loading="lazy"><figcaption>dengli-face-s88.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>windless <span>P2 · 无风之海：写满旧航迹的死水</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/windless-s201.jpg" alt="windless 草稿" loading="lazy"><figcaption>windless-s201.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/windless-s202.jpg" alt="windless 草稿" loading="lazy"><figcaption>windless-s202.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>echo-stairs <span>P2 · 回声阶：雾中石阶与钟</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/echo-stairs-s203.jpg" alt="echo-stairs 草稿" loading="lazy"><figcaption>echo-stairs-s203.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/echo-stairs-s204.jpg" alt="echo-stairs 草稿" loading="lazy"><figcaption>echo-stairs-s204.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>ferry <span>P2 · 无名渡：雾中渡船</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/ferry-s205.jpg" alt="ferry 草稿" loading="lazy"><figcaption>ferry-s205.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/ferry-s206.jpg" alt="ferry 草稿" loading="lazy"><figcaption>ferry-s206.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>scale-star <span>P2 · 秤星岛：铜秤与星</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/scale-star-s207.jpg" alt="scale-star 草稿" loading="lazy"><figcaption>scale-star-s207.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/scale-star-s208.jpg" alt="scale-star 草稿" loading="lazy"><figcaption>scale-star-s208.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>papermoon <span>P2 · 纸月：折纸月亮</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/papermoon-s209.jpg" alt="papermoon 草稿" loading="lazy"><figcaption>papermoon-s209.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/papermoon-s210.jpg" alt="papermoon 草稿" loading="lazy"><figcaption>papermoon-s210.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>tower <span>P3 · 第一塔：雾海巨塔一点光</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/tower-s301.jpg" alt="tower 草稿" loading="lazy"><figcaption>tower-s301.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/tower-s302.jpg" alt="tower 草稿" loading="lazy"><figcaption>tower-s302.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>end-daybreak <span>结局 · 拂晓</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/end-daybreak-s311.jpg" alt="end-daybreak 草稿" loading="lazy"><figcaption>end-daybreak-s311.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/end-daybreak-s312.jpg" alt="end-daybreak 草稿" loading="lazy"><figcaption>end-daybreak-s312.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>end-nightwatch <span>结局 · 守夜</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/end-nightwatch-s313.jpg" alt="end-nightwatch 草稿" loading="lazy"><figcaption>end-nightwatch-s313.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/end-nightwatch-s314.jpg" alt="end-nightwatch 草稿" loading="lazy"><figcaption>end-nightwatch-s314.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>end-fuel <span>结局 · 燃料</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/end-fuel-s315.jpg" alt="end-fuel 草稿" loading="lazy"><figcaption>end-fuel-s315.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/end-fuel-s316.jpg" alt="end-fuel 草稿" loading="lazy"><figcaption>end-fuel-s316.jpg</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>end-gloves <span>结局 · 收灯</span></h2>
+      <div class="row">
+      <figure><img src="../../assets/cg/drafts/end-gloves-s317.jpg" alt="end-gloves 草稿" loading="lazy"><figcaption>end-gloves-s317.jpg</figcaption></figure>
+      <figure><img src="../../assets/cg/drafts/end-gloves-s318.jpg" alt="end-gloves 草稿" loading="lazy"><figcaption>end-gloves-s318.jpg</figcaption></figure>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

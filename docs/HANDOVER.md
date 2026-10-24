@@ -2,11 +2,12 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 交接版本 | v1.2.0 |
-| v1.2 功能提交 | `302d924`（2026-10-24） |
+| 交接版本 | v2.0.0《九灯》 |
 | 线上 | <https://exldiposen.github.io/fuyu/> |
 | 仓库 | <https://github.com/exldiposen/fuyu> |
-| 状态 | 可玩、已部署；`node --test` 19 个测试通过；GitHub Actions `validate` 通过 |
+| 状态 | 可玩、已部署；`node --test` 41 个测试通过（v1 31 + v2 10）；GitHub Actions `validate` 通过 |
+| 双书 | 默认 `data/worlds.v2.json`《九灯》；`?book=v1` 玩前作《浮屿》（`data/worlds.json`，v1.3 备份另存 `docs/design/backup-worlds-v1.3.json`） |
+| v2 设计 | 一切故事 / 美术决定见 [`V2_DESIGN.md`](V2_DESIGN.md)（谜题阶梯、四结局、CG 管线、分期） |
 
 ## 0. 先看这三件事
 
@@ -18,27 +19,25 @@
 
 ## 1. 项目是什么
 
-《浮屿》是一款中文网页叙事游戏：失忆的旅人漂过七座岛与一座灯塔，理解每座岛“不解释自己”的规则，拾回八块记忆碎片，最后决定要不要回家。
+《浮屿》是一款中文网页叙事游戏：失忆的旅人漂过九座岛与一座灯塔，理解每座岛“不解释自己”的规则，拾回十块记忆碎片，最后决定要不要回家。
 
 当前内容规模：
 
 | 项目 | 数量 |
 | --- | --- |
-| 世界（含序章与灯塔） | 9 |
-| 场景 | 67 |
-| 记忆碎片 | 8 |
-| 观察手记 | 21 |
+| 世界（含序章与灯塔） | 11 |
+| 场景 | 87 |
+| 记忆碎片 | 10 |
+| 观察手记 | 27 |
 | 结局 | 4（归乡 / 守灯 / 漂流 / 无名） |
 | 界面风格 | 3（静海 / 潮红 / 深蓝，默认潮红） |
 
-v1.2 的重点是**桌面版式**：
+v1.3 的重点是**内容与回航**：
 
-- 标题页 80rem 双栏海报（左文右星图）；
-- 正文 46rem；
-- 海图 640px；
-- 航海日志 56rem、桌面双栏；
-- 结局 54rem；
-- 潮红加入更大的拼贴与 cut-in；深蓝加入钟表、水面与冷光。
+- 两座新岛：重诺屿（回声 × 代价：许愿要许两遍）、叠浪（折页 × 回声：折起的路要走两遍才踩得实）；
+- 结局屏的结局收藏与「带走星图」PNG 导出；
+- 存档只存 ID，恢复时从数据重新水化；
+- cut-in 频率开关、界面纯逻辑 `src/flow.js`、无障碍补强。
 
 ---
 
@@ -89,7 +88,9 @@ npm test             # 19 个测试
 | `assets/logo.svg` | 原创灯塔印章 |
 | `src/main.js` | 运行时总控：屏幕切换、交互、键盘、存档、音频、主题、cut-in、调试钩子 |
 | `src/engine.js` | 纯状态机：旗标、条件、代价、回声、折页、失而复得、结局 |
+| `src/flow.js` | 界面流程纯逻辑：cut-in 决策、海图提示、标题进度、结局收藏模型 |
 | `src/render.js` | 场景、海图、日志、星图、结局、代价选择器的渲染 |
+| `src/share.js` | 记忆星图的 PNG 分享图导出（Canvas 程序化绘制） |
 | `src/sea.js` | Canvas 海面、雾、潮汐、灯塔光束、涟漪 |
 | `src/audio.js` | Web Audio 合成环境声；无外部音频 |
 | `src/save.js` | v2 存档、v0.1 迁移、跨周目 meta、声音偏好 |
@@ -157,6 +158,7 @@ save.js ──► localStorage
 ```js
 __fuyu.start()                 // 新开一局
 __fuyu.style("crimson")        // "calm" | "crimson" | "azure"
+__fuyu.cutin("key")            // "all" | "key"（cut-in 频率）
 __fuyu.title()                 // 回标题
 __fuyu.travel("wufeng")        // 走正常靠岸流程（会触发 cut-in / 雾幕）
 __fuyu.goto("wufeng")          // 直接跳岛，不触发转场（截图常用）
@@ -268,11 +270,14 @@ __fuyu.engine / __fuyu.data    // 只读调试用
 cut-in：
 
 - DOM：`#cut-in`、`#cut-in-word`、`#cut-in-sub`；
-- 函数：`main.js` 的 `cutIn(word, sub)`；
-- 触发点：起航、接续、靠岸、拾回记忆、折页、付出代价、结局；
-- 静海不触发（`cutIn` 内直接返回；CSS 也默认隐藏）；
+- 函数：`main.js` 的 `cutIn(word, sub, kind)`；`kind` 标明触发时刻
+  （`depart` / `continue` / `arrival` / `arrival-new` / `memory` / `fold` / `cost` / `ending`）；
+- 触发点：起航、接续、靠岸（区分新岛 `arrival-new` 与重复靠岸 `arrival`）、拾回记忆、折页、付出代价、结局；
+- 静海不触发（`src/flow.js` 的 `shouldCutIn` 直接返回 false；CSS 也默认隐藏）；
+- 频率开关：「航行须知」弹层里的「转场动画」，全部 / 仅靠岸与结局；
+  持久化键 `fuyu-cutin-v1`；“仅靠岸与结局”模式只保留 `arrival-new` 与 `ending`；
 - 动画约 0.95s，JS 在 1s 后移除 `.show`；
-- 若觉得太频繁，改 `main.js` 里的调用点即可，不要改 CSS 动画本身。
+- 若觉得触发时机不对，改 `main.js` 里的调用点或 `flow.js` 里的 `KEY_CUT_IN_KINDS`，不要改 CSS 动画本身。
 
 ### 6.4 深蓝：钟表、水面、冷光
 
@@ -299,12 +304,16 @@ cut-in：
 
 | localStorage key | 内容 |
 | --- | --- |
-| `fuyu-save-v2` | 当前航行：`v`、`state`（岛、场景、碎片、失去的碎片、手记、旗标、规则、已访问、结局、步数、是否在海图） |
+| `fuyu-save-v2` | 当前航行：`v`、`state`（岛、场景、碎片 id 与 returned 标志、失去的碎片 id、手记 id、旗标、规则、已访问、结局、步数、是否在海图） |
 | `fuyu-save-v1` | v0.1 旧存档；接续后删除 |
 | `fuyu-meta-v1` | 跨周目：抵达过的结局、见过的碎片、开局次数 |
 | `fuyu-style-v1` | `calm` / `crimson` / `azure` |
 | `fuyu-sound-v1` | 环境声偏好 |
+| `fuyu-cutin-v1` | cut-in 频率：`all` / `key` |
 
+- **v1.3 起 v2 存档只存 ID**：碎片存 `{ id, returned }`，失去的碎片与手记只存 id；
+  `engine.restore()` 从 `worlds.json` 重新水化正文。改文案后旧存档读到的是新内容；
+  引用已消失碎片 / 手记的条目会被静默丢弃（有测试覆盖）。旧 v2 的完整对象形态仍可恢复。
 - `save.js` 的所有 localStorage 操作都 catch 异常；隐私模式 / 存储满时游戏仍可继续，只是不落盘。
 - `engine.serialize()` 只保存可恢复的状态；`echo`、`folded`、`pendingCost` 不跨刷新保存。
 - 旧存档迁移：`restore()` 识别没有 `v` 且带 `worldId/sceneId` 的 v0.1 结构。
@@ -323,9 +332,9 @@ node scripts/validate.mjs
 node --test
 ```
 
-当前：`validate` 通过；19/19 测试通过。CI 在 `.github/workflows/validate.yml`，push / PR 都会跑。
+当前：`validate` 通过；31/31 测试通过。CI 在 `.github/workflows/validate.yml`，push / PR 都会跑。
 
-测试覆盖：序章、静默屿、碎片 / 规则去重、回声、折页、代价、欠账 / 还账、无名渡条件、灯塔解锁、完整航线、三个结局、存档往返、v0.1 迁移、损坏存档、海图结构、手记 / 规则去重。
+测试覆盖：序章、静默屿、碎片 / 规则去重、回声、折页、代价、欠账 / 还账、无名渡条件、灯塔解锁、完整航线（含重诺屿与叠浪）、三个结局、存档往返、v0.1 迁移、损坏存档、海图结构、手记 / 规则去重、重诺屿的回声 × 代价、叠浪的折页 × 回声与回头路、存档 ID 水化与旧形态兼容，以及 `src/flow.js` 的全部纯逻辑（cut-in 决策、海图提示、标题进度、结局收藏）。
 
 新增机制时，先在 `tests/engine.test.mjs` 写一条能失败的测试，再改引擎。不要只靠手点。
 
@@ -394,14 +403,14 @@ git ls-remote git@github.com:exldiposen/fuyu.git refs/heads/master
 
 ## 10. 已知问题与边界
 
-1. **cut-in 频率**：起航 / 接续 / 靠岸 / 记忆 / 折页 / 代价 / 结局都会触发。当前是刻意的 P5R 式节奏；如果用户觉得吵，改 `main.js` 调用点，或在设置里加开关。
-2. **静海没有 cut-in**：这是设计，不是遗漏。静海保留雾幕；不要“统一”掉。
-3. **900–1100px 的海图表头**：潮红 / 深蓝的 `.chart-head` / `.chart-hint` 是 40rem，而基础 `.chart` 在该区间仍是 38rem，可能有约 32px 的线宽差；桌面 ≥1100 已对齐。需要时在 `style-graphic.css` 的 1100 媒体里统一。
-4. **截图伪影**：headless Edge 在风格切换后立即截图，偶发 2×2 瓦片；重载 / 等待即可，真实浏览器不受影响。
-5. **字体回退**：不加载外部字体；`Arial Black` / `Impact` / `Microsoft YaHei` 在不同系统上会有字宽差异，属预期。不要为了截图一致引入受版权保护或外部字体。
-6. **无 i18n / PWA / 存档导出**：目前只有中文；这些在 v1.3 路线图里，不要假装已经支持。
-7. **音频需要用户手势**：浏览器自动播放策略决定；`setupAutoAudio` 已处理首次交互，不要绕过。
-8. **localStorage 失败**：隐私模式下不落盘，但游戏仍可玩；这是预期行为。
+1. **静海没有 cut-in**：这是设计，不是遗漏。静海保留雾幕；不要“统一”掉。
+2. **截图伪影**：headless Edge 在风格切换后立即截图，偶发 2×2 瓦片；重载 / 等待即可，真实浏览器不受影响。
+3. **README 截图仍是 v1.2 的七岛海图**：v1.3 海图已是九岛，`docs/screenshots/` 需要按第 8.2 节流程重拍；优先重拍 `chart-crimson` 与 `title-*`。
+4. **字体回退**：不加载外部字体；`Arial Black` / `Impact` / `Microsoft YaHei` 在不同系统上会有字宽差异，属预期。不要为了截图一致引入受版权保护或外部字体。
+5. **无 i18n / PWA / 存档导出**：目前只有中文；这些在 v1.4 路线图里，不要假装已经支持。
+6. **音频需要用户手势**：浏览器自动播放策略决定；`setupAutoAudio` 已处理首次交互，不要绕过。
+7. **localStorage 失败**：隐私模式下不落盘，但游戏仍可玩；这是预期行为。
+8. **星图导出用 dataURL**：`share.js` 走 `canvas.toDataURL`；碎片再多也不会超限，但若未来加到几十颗星，考虑换 `toBlob`。
 9. **不要在仓库里提交 `.shots/`**：里面有浏览器 profile 和临时截图，已 gitignore；不要为了“方便”把它加进去。
 
 ---
@@ -410,43 +419,40 @@ git ls-remote git@github.com:exldiposen/fuyu.git refs/heads/master
 
 ### 近期打磨
 
-- 观察 cut-in 的实际游玩节奏；如果太频繁，做“只在新岛 / 结局触发”的轻量开关。
-- 统一 900–1100px 的海图表头 / 图表宽度。
+- 重拍 README 截图（海图与标题页已是九岛版本）。
 - 给潮红补一两个“漫画分栏”的场景内装饰（不要过度遮挡正文）。
 - 给深蓝补一个更明确的水面 / 钟表视觉锚点（当前主要在标题海报）。
-- 屏幕阅读器与焦点顺序走查；特别是 cut-in / modal / ending 的焦点。
+- 屏幕阅读器完整走查：cut-in / modal / ending / journal 的焦点与播报顺序。
 
-### v1.3（路线图）
+### v1.4（路线图）
 
 - 英文内容管线（i18n）；
 - 存档导出 / 导入（JSON，不含个人信息）；
 - 结局后的“回航”模式；
 - PWA 离线缓存与安装入口；
-- 可选的原创插画 / 纸张纹理，保持零依赖。
+- 1–2 座社区岛与隐藏航线；
+- 规则库页面。
 
-### v1.4
-
-- 1–2 座社区岛；
-- 隐藏航线；
-- 规则库页面；
-- 多语言碎片文本。
-
-**方向建议**：v1.2 已经把“潮红更狠、深蓝更冷、桌面更大”做出来了。下一步不要继续加第四套皮肤；先把其中一套深化到“有完整场景语言”的程度，再考虑扩张。
+**方向建议**：v1.3 把“机制组合”做出来了（回声 × 代价、折页 × 回声）。
+下一步优先深化内容与回航体验，不要急着加第四套皮肤或新机制；
+重诺屿“押着的结”是跨岛代价链（v2.0）的伏笔，可以顺着它长。
 
 ---
 
 ## 12. 交接检查清单
 
-- [ ] `git status` 干净；HEAD 是 `302d924` 或更新的提交；`master` 与 `origin/master` 同步。
+- [ ] `git status` 干净；HEAD 是最新提交；`master` 与 `origin/master` 同步。
 - [ ] `node scripts/validate.mjs` 通过。
-- [ ] `node --test` 19/19 通过。
-- [ ] `node scripts/serve.mjs`，检查标题、游戏、海图、日志、结局。
+- [ ] `node --test` 31/31 通过。
+- [ ] `node scripts/serve.mjs`，检查标题、游戏、海图（九岛）、日志、结局。
 - [ ] 三套风格都看一遍：潮红 / 深蓝 / 静海。
 - [ ] 桌面 1463×1083 与手机 390×844 各看一遍。
-- [ ] 触发一次 cut-in；确认静海不触发。
+- [ ] 触发一次 cut-in；确认静海不触发；在「航行须知」切到“仅靠岸与结局”再走一遍。
+- [ ] 走一次重诺屿（许愿与蹚水两条路）与一次叠浪（含跳下去的回头路）。
+- [ ] 结局屏确认结局收藏与「带走星图」下载。
 - [ ] 开 `prefers-reduced-motion` 看一遍；不应有长动画。
 - [ ] 标题 `STYLE`、页脚「风格」、`T` 键都能切换并持久化。
-- [ ] `?debug=1` 的 `goto` / `travel` / `ending` 可用。
+- [ ] `?debug=1` 的 `goto` / `travel` / `ending` / `cutin` 可用。
 - [ ] README 引用的 `docs/screenshots/*.webp` 都存在。
 - [ ] 没有 staged 的 `.shots/`、密钥、个人信息、本机路径。
 - [ ] push 后 CI `validate` 与 Pages 都是 success；线上强刷验证。
@@ -458,8 +464,10 @@ git ls-remote git@github.com:exldiposen/fuyu.git refs/heads/master
 
 - 想改**故事 / 岛屿 / 结局** → `data/worlds.json` + [`WORLD_RULES.md`](WORLD_RULES.md)
 - 想改**规则 / 条件 / 存档** → `src/engine.js` + `tests/engine.test.mjs`
-- 想改**屏幕流程 / 键盘 / cut-in** → `src/main.js`
+- 想改**屏幕流程 / 键盘 / cut-in 触发点** → `src/main.js`
+- 想改**cut-in 决策 / 海图提示 / 结局收藏的逻辑** → `src/flow.js` + `tests/ui.test.mjs`
 - 想改**场景 / 海图 / 日志 / 结局的 DOM** → `src/render.js`
+- 想改**星图分享图** → `src/share.js`
 - 想改**静海 / 共享布局** → `assets/style.css`
 - 想改**潮红 / 深蓝** → `assets/style-graphic.css`
 - 想改**风格选择 / 持久化** → `src/theme.js` + `index.html` 内联脚本

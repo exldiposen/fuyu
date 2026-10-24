@@ -16,6 +16,8 @@ const MOOD_SOUND = {
   scale: { base: 87.31, fifth: 130.81, cutoff: 340, noise: 0.025 },
   paper: { base: 174.61, fifth: 261.63, cutoff: 900, noise: 0.03 },
   tide: { base: 123.47, fifth: 185.0, cutoff: 560, noise: 0.065 },
+  vow: { base: 103.83, fifth: 155.56, cutoff: 420, noise: 0.05 },
+  fold: { base: 138.59, fifth: 207.65, cutoff: 680, noise: 0.032 },
   finale: { base: 98.0, fifth: 146.83, cutoff: 480, noise: 0.04 },
   "ending-home": { base: 130.81, fifth: 196.0, cutoff: 700, noise: 0.035 },
   "ending-keeper": { base: 98.0, fifth: 146.83, cutoff: 520, noise: 0.04 },

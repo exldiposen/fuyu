@@ -1057,8 +1057,9 @@ html[data-style="azure"] .title-poster {
    -------------------------------------------------------------------------- */
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .chart-head {
-  width: min(100%, 40rem, 64vh);
-  max-width: 40rem;
+  /* 与基础 .chart 的宽度保持一致，避免 900–1100px 区间出现线宽差 */
+  width: min(100%, 38rem, 58vh);
+  max-width: 38rem;
   margin: 0;
   padding-bottom: 1rem;
   border-bottom: 2px solid var(--line-strong);
@@ -1226,8 +1227,9 @@ html[data-style="azure"] .title-poster {
 }
 
 :is(html[data-style="crimson"], html[data-style="azure"]) .chart-hint {
-  width: min(100%, 40rem, 64vh);
-  max-width: 40rem;
+  /* 与 .chart-head 同宽，跟随基础 .chart 的断点 */
+  width: min(100%, 38rem, 58vh);
+  max-width: 38rem;
   margin: 1.4rem 0 0;
   padding: 0.8rem 1rem;
   color: var(--ink-soft);
@@ -1541,6 +1543,75 @@ html[data-style="azure"] .title-poster {
   font-weight: 900;
 }
 
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection {
+  margin: 0 0 1.6rem;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection-list {
+  justify-content: flex-start;
+  gap: 0.7rem;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection-item {
+  gap: 0.7rem;
+  padding: 0.5rem 0.9rem;
+  background: #050505;
+  border: 2px solid var(--line-strong);
+  box-shadow: 4px 4px 0 var(--amber);
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection-item.seen {
+  border-color: var(--amber);
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection-item.unseen {
+  box-shadow: none;
+  opacity: 0.66;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection-kicker {
+  font-family: var(--mono);
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection-title {
+  font-family: var(--display);
+  font-weight: 900;
+  color: #fff;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection-item.unseen .ending-collection-title {
+  color: var(--dim);
+  font-weight: 700;
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-collection-hint {
+  text-align: left;
+  font-family: var(--mono);
+}
+
+/* CG 层：潮红偏暖硬朗，深蓝偏冷收敛；都保持轻度统一调色 */
+:is(html[data-style="crimson"]) .cg-layer img,
+:is(html[data-style="crimson"]) .ending-cg img {
+  filter: saturate(1.04) contrast(1.1) brightness(0.97);
+}
+
+:is(html[data-style="azure"]) .cg-layer img,
+:is(html[data-style="azure"]) .ending-cg img {
+  filter: saturate(0.82) hue-rotate(-6deg) contrast(1.06) brightness(0.92);
+}
+
+:is(html[data-style="crimson"], html[data-style="azure"]) .ending-cg {
+  border: 2px solid var(--line-strong);
+}
+
+:is(html[data-style="crimson"]) .ending-cg {
+  box-shadow: 6px 6px 0 var(--amber);
+}
+
+:is(html[data-style="azure"]) .ending-cg {
+  box-shadow: 0 0 34px rgba(127, 184, 216, 0.18);
+}
+
 :is(html[data-style="crimson"], html[data-style="azure"]) .ending-actions {
   justify-content: flex-start;
 }
@@ -1676,6 +1747,13 @@ html[data-style="azure"] .title-poster {
   :is(html[data-style="crimson"], html[data-style="azure"]) #game-screen {
     width: min(100% - 3rem, 52rem);
     max-width: 52rem;
+  }
+
+  /* 桌面海图放大到 40rem 时，表头与提示条跟着放大（与基础 .chart 对齐） */
+  :is(html[data-style="crimson"], html[data-style="azure"]) .chart-head,
+  :is(html[data-style="crimson"], html[data-style="azure"]) .chart-hint {
+    width: min(100%, 40rem, 64vh);
+    max-width: 40rem;
   }
 
   :is(html[data-style="crimson"], html[data-style="azure"]) #journal-screen {

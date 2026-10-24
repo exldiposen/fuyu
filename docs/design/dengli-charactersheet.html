@@ -1,0 +1,307 @@
+<div id="dengli-sheet">
+  <style>
+    #dengli-sheet {
+      --warm: #ffd9a0;
+      --warm-core: #fff3d8;
+      --cool: #7fb8d8;
+      --bg-a: #04080f;
+      --bg-b: #0d1826;
+      --fog: #8fa3c0;
+      --ink: #d8dee8;
+      --ink-dim: #93a0b4;
+      --line: rgba(216, 222, 232, 0.14);
+      font-family: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    #dengli-sheet .ds-head { padding: 2px 2px 12px; }
+    #dengli-sheet .ds-kicker {
+      font-size: 11px;
+      letter-spacing: 0.32em;
+      color: var(--ink-dim);
+      text-transform: uppercase;
+    }
+    #dengli-sheet h2 { margin: 4px 0 2px; font-size: 22px; font-weight: 500; letter-spacing: 0.12em; }
+    #dengli-sheet .ds-concept { color: var(--ink-dim); font-size: 13px; max-width: 46rem; }
+    #dengli-sheet .ds-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 26px;
+      align-items: center;
+      padding: 10px 2px 14px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    #dengli-sheet .ds-stage-box { flex: 1 1 260px; min-width: 220px; }
+    #dengli-sheet .ds-stage-label { font-size: 12px; color: var(--ink-dim); }
+    #dengli-sheet .ds-stage-name { color: var(--warm); font-size: 13px; letter-spacing: 0.2em; }
+    #dengli-sheet input[type="range"] { width: 100%; accent-color: var(--warm); }
+    #dengli-sheet .ds-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--ink-dim);
+      letter-spacing: 0.1em;
+    }
+    #dengli-sheet .ds-theme-row { display: flex; gap: 8px; align-items: center; }
+    #dengli-sheet .ds-theme-row .ds-theme-label { font-size: 12px; color: var(--ink-dim); margin-right: 2px; }
+    #dengli-sheet button.ds-theme {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink-dim);
+      border-radius: 4px;
+      padding: 5px 12px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #dengli-sheet button.ds-theme[aria-pressed="true"] {
+      color: var(--warm);
+      border-color: var(--warm);
+    }
+    #dengli-sheet .ds-body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      padding: 18px 0 6px;
+      align-items: flex-start;
+    }
+    #dengli-sheet .ds-portrait-main { flex: 0 1 380px; min-width: 280px; }
+    #dengli-sheet .ds-notes { flex: 1 1 300px; min-width: 260px; }
+    #dengli-sheet .ds-notes dt {
+      color: var(--warm);
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      margin-top: 14px;
+    }
+    #dengli-sheet .ds-notes dt:first-child { margin-top: 2px; }
+    #dengli-sheet .ds-notes dd { margin: 2px 0 0; color: var(--ink-dim); font-size: 13px; }
+    #dengli-sheet .ds-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      margin-top: 8px;
+    }
+    #dengli-sheet .ds-mini { width: 96px; text-align: center; }
+    #dengli-sheet .ds-mini .ds-mini-cap { font-size: 11px; color: var(--ink-dim); line-height: 1.5; }
+    #dengli-sheet .ds-mini .ds-mini-cap b { color: var(--ink); font-weight: 500; letter-spacing: 0.14em; }
+
+    /* 亮度五档 */
+    #dengli-sheet .st0 { --flame: 0.22; --rim: 0.3; --eye: 0.35; --cast: 0.1; --dust: 0.14; --tip: 0.07; }
+    #dengli-sheet .st1 { --flame: 0.45; --rim: 0.5; --eye: 0.55; --cast: 0.22; --dust: 0.34; --tip: 0.16; }
+    #dengli-sheet .st2 { --flame: 0.7; --rim: 0.72; --eye: 0.8; --cast: 0.38; --dust: 0.55; --tip: 0.33; }
+    #dengli-sheet .st3 { --flame: 0.9; --rim: 0.9; --eye: 1; --cast: 0.55; --dust: 0.75; --tip: 0.58; }
+    #dengli-sheet .st4 { --flame: 1; --rim: 1; --eye: 1; --cast: 0.72; --dust: 0.95; --tip: 0.85; }
+
+    /* 三套配色（对应游戏三主题） */
+    #dengli-sheet .t-azure   { --warm: #ffd9a0; --warm-core: #fff3d8; --cool: #7fb8d8; --bg-a: #04080f; --bg-b: #0d1826; --fog: #8fa3c0; }
+    #dengli-sheet .t-crimson { --warm: #ff9a5c; --warm-core: #ffe2bd; --cool: #c85840; --bg-a: #0d0305; --bg-b: #1d090b; --fog: #c08a80; }
+    #dengli-sheet .t-calm    { --warm: #e8cf9a; --warm-core: #f7ead0; --cool: #8fa3c0; --bg-a: #05080e; --bg-b: #101823; --fog: #aebdd6; }
+
+    #dengli-sheet svg.ds-figure { width: 100%; height: auto; display: block; }
+    #dengli-sheet .ds-figure .figure { animation: ds-breathe 5.2s ease-in-out infinite; }
+    #dengli-sheet .ds-figure .flame-g { animation: ds-flick 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+    #dengli-sheet .ds-figure .mote { animation: ds-rise 6s linear infinite; }
+    #dengli-sheet .ds-figure .hair-sway { animation: ds-sway 9s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 0%; }
+    @keyframes ds-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(2.4px); } }
+    @keyframes ds-flick {
+      0%, 100% { transform: scale(1, 1) rotate(0deg); }
+      28% { transform: scale(1.04, 1.09) rotate(-1.6deg); }
+      55% { transform: scale(0.96, 0.94) rotate(1.2deg); }
+      78% { transform: scale(1.03, 1.05) rotate(-0.8deg); }
+    }
+    @keyframes ds-rise {
+      0% { transform: translateY(0); opacity: 0; }
+      18% { opacity: 1; }
+      85% { opacity: 0.7; }
+      100% { transform: translateY(-120px); opacity: 0; }
+    }
+    @keyframes ds-sway { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-1.1deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      #dengli-sheet .figure, #dengli-sheet .flame-g, #dengli-sheet .mote, #dengli-sheet .hair-sway { animation: none !important; }
+    }
+  </style>
+
+  <header class="ds-head">
+    <p class="ds-kicker">FUYU · NINE LAMPS — CHARACTER SHEET</p>
+    <h2>灯璃 · DENGLI</h2>
+    <p class="ds-concept">由火而生的灯灵。她的光以你的记忆为薪——记忆拾得越多，她越亮；薪尽，她熄。默认停在「烛」：这不是一个光耀的女孩，是一点随时会灭、还没灭的光。</p>
+  </header>
+
+  <div class="ds-controls">
+    <div class="ds-stage-box">
+      <p class="ds-stage-label">光的阶段　<span class="ds-stage-name" id="ds-stage-name" aria-live="polite">烛</span></p>
+      <input type="range" id="ds-slider" min="0" max="4" step="1" value="1" aria-label="灯璃的光的亮度阶段">
+      <div class="ds-ticks"><span>余烬</span><span>烛</span><span>灯</span><span>焰</span><span>拂晓</span></div>
+    </div>
+    <div class="ds-theme-row" role="group" aria-label="配色主题">
+      <span class="ds-theme-label">配色</span>
+      <button class="ds-theme" data-theme="t-azure" aria-pressed="true" type="button">深蓝</button>
+      <button class="ds-theme" data-theme="t-crimson" aria-pressed="false" type="button">潮红</button>
+      <button class="ds-theme" data-theme="t-calm" aria-pressed="false" type="button">静海</button>
+    </div>
+  </div>
+
+  <div class="ds-body">
+    <div class="ds-portrait" id="ds-main"></div>
+    <dl class="ds-notes">
+      <dt>灯瞳</dt>
+      <dd>垂目。眼里那一点不灭的光——即使落到「余烬」档也亮着。那是她还存在的证明，也是 BE 判定线的可视化。</dd>
+      <dt>发如灯芯</dt>
+      <dd>发梢是未燃尽的灯芯。光越满，发梢越透、越暖；「余烬」档几乎全灰。风起时发丝像一缕烟。</dd>
+      <dt>怀中之灯</dt>
+      <dd>她双手捧着一盏小灯——她的命火，也是整幅画面唯一的暖光源。火苗的每一次抖动都是她的呼吸。</dd>
+      <dt>双轮廓光</dt>
+      <dd>暖光来自她的灯（前），冷光来自雾海（后）。世界是冷的，她自己是暖的——两个颜色的交界就是她的轮廓。</dd>
+      <dt>灯尘</dt>
+      <dd>她散落的光化作向上飘的萤尘。永夜结局里，这些尘会落回灰烬——同一个粒子系统，倒放。</dd>
+    </dl>
+  </div>
+
+  <div class="ds-strip" id="ds-strip"></div>
+
+  <script>
+    (function () {
+      var root = document.getElementById("dengli-sheet");
+      var STAGES = ["余烬", "烛", "灯", "焰", "拂晓"];
+      var FRAGS = ["0–1 块", "2–3 块", "4–5 块", "6–7 块", "8–10 块"];
+      var uid = 0;
+
+      function svg(u) {
+        var warm = "var(--warm)";
+        var core = "var(--warm-core)";
+        var cool = "var(--cool)";
+        return (
+'<svg class="ds-figure" viewBox="0 0 400 520" role="img" aria-label="灯璃的剪影立绘：侧影少女捧着一盏小灯">' +
+'<defs>' +
+'<linearGradient id="bg' + u + '" x1="0" y1="0" x2="0" y2="1">' +
+'<stop offset="0" stop-color="var(--bg-a)"/><stop offset="1" stop-color="var(--bg-b)"/>' +
+'</linearGradient>' +
+'<radialGradient id="lampglow' + u + '" cx="0.5" cy="0.5" r="0.5">' +
+'<stop offset="0" stop-color="' + warm + '" stop-opacity="0.6"/><stop offset="1" stop-color="' + warm + '" stop-opacity="0"/>' +
+'</radialGradient>' +
+'<radialGradient id="cast' + u + '" cx="0.35" cy="0.4" r="0.75">' +
+'<stop offset="0" stop-color="' + warm + '" stop-opacity="0.55"/><stop offset="1" stop-color="' + warm + '" stop-opacity="0"/>' +
+'</radialGradient>' +
+'<filter id="glow' + u + '" x="-120%" y="-120%" width="340%" height="340%">' +
+'<feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+'</filter>' +
+'<filter id="soft' + u + '" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="1.1"/></filter>' +
+'<clipPath id="faceclip' + u + '">' +
+'<ellipse cx="196" cy="158" rx="40" ry="50"/>' +
+'<path d="M 163 138 C 158 148 152 154 148 163 C 145 170 152 170 154 174 C 150 178 148 181 151 184 C 148 188 150 192 154 195 C 152 201 158 205 166 206 Z"/>' +
+'<path d="M 176 198 L 214 194 L 218 244 L 172 248 Z"/>' +
+'</clipPath>' +
+'</defs>' +
+'<rect width="400" height="520" fill="url(#bg' + u + ')"/>' +
+'<g opacity="0.5">' +
+'<ellipse cx="120" cy="486" rx="180" ry="26" fill="var(--fog)" opacity="0.07"/>' +
+'<ellipse cx="300" cy="502" rx="200" ry="30" fill="var(--fog)" opacity="0.05"/>' +
+'<path d="M 88 512 L 92 474 L 98 472 L 102 512 Z" fill="#0a0e15"/>' +
+'<path d="M 252 512 L 256 470 L 261 468 L 265 512 Z" fill="#0a0e15"/>' +
+'<path d="M 330 512 L 333 484 L 337 483 L 340 512 Z" fill="#0a0e15"/>' +
+'</g>' +
+'<g class="figure">' +
+'<path class="hair-sway" d="M 196 78 C 258 82 286 128 282 190 C 280 262 318 332 308 412 C 302 470 262 504 218 514 L 92 514 C 84 440 102 378 94 298 C 88 236 106 148 150 108 C 164 94 180 82 196 78 Z" fill="#141821"/>' +
+'<path class="hair-sway" d="M 200 92 C 246 98 266 138 264 192 C 262 254 292 322 284 396 C 278 452 246 486 210 500 C 176 488 158 452 158 402 C 158 340 172 268 168 208 C 165 160 172 112 200 92 Z" fill="#0f131b"/>' +
+'<path d="M 172 244 C 138 268 120 324 116 384 C 112 450 126 498 140 514 L 306 514 C 318 470 320 418 310 360 C 298 296 266 250 232 238 C 212 230 186 232 172 244 Z" fill="#0d1017"/>' +
+'<path d="M 236 232 C 252 226 262 214 264 198 L 246 206 C 242 218 238 226 236 232 Z" fill="#171b24"/>' +
+'<path d="M 176 198 L 214 194 L 219 246 L 173 250 Z" fill="#241f1c"/>' +
+'<ellipse cx="196" cy="158" rx="40" ry="50" fill="#241f1c" transform="rotate(-4 196 158)"/>' +
+'<path d="M 163 138 C 158 148 152 154 148 163 C 145 170 152 170 154 174 C 150 178 148 181 151 184 C 148 188 150 192 154 195 C 152 201 158 205 166 206 Z" fill="#241f1c"/>' +
+'<g clip-path="url(#faceclip' + u + ')">' +
+'<rect x="120" y="90" width="110" height="150" fill="url(#cast' + u + ')" opacity="var(--cast)"/>' +
+'</g>' +
+'<path d="M 168 90 C 148 108 142 132 146 160 C 148 174 144 188 134 200 C 148 202 158 192 161 178 C 165 154 166 118 168 90 Z" fill="#171b24"/>' +
+'<path d="M 216 102 C 230 124 232 154 226 186 C 235 178 240 160 240 142 C 240 122 230 106 216 102 Z" fill="#171b24"/>' +
+'<path d="M 168 148 C 174 145 180 146 184 150" stroke="#1d1a17" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+'<path d="M 165 157 C 171 154 177 156 180 161" stroke="' + warm + '" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="calc(var(--rim) * 0.75)"/>' +
+'<circle cx="172" cy="160" r="2.1" fill="' + core + '" opacity="var(--eye)" filter="url(#glow' + u + ')"/>' +
+'<path d="M 150 180 C 154 177 159 178 162 181" stroke="' + warm + '" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="calc(var(--rim) * 0.5)"/>' +
+'<path d="M 171 104 C 160 119 155 134 158 145 C 145 161 147 167 152 173 C 147 178 146 183 150 188 C 146 193 148 199 154 203 C 156 209 163 213 171 215 C 176 220 179 230 179 242" stroke="' + warm + '" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="var(--rim)" filter="url(#glow' + u + ')"/>' +
+'<path d="M 262 118 C 276 158 272 208 288 256 C 306 310 322 358 312 414" stroke="' + cool + '" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="calc(var(--rim) * 0.55)" filter="url(#soft' + u + ')"/>' +
+'<path d="M 296 298 C 318 338 328 378 320 422 C 312 394 298 354 286 324 Z" fill="' + warm + '" opacity="var(--tip)" filter="url(#soft' + u + ')"/>' +
+'<path d="M 176 250 C 168 268 164 286 168 300 C 174 292 178 272 182 258 Z" fill="' + warm + '" opacity="calc(var(--tip) * 0.8)" filter="url(#soft' + u + ')"/>' +
+'<ellipse cx="196" cy="308" rx="52" ry="46" fill="url(#lampglow' + u + ')" opacity="calc(var(--flame) * 0.3)"/>' +
+'<path d="M 168 314 C 172 330 186 340 202 338 C 210 337 216 332 218 326 C 220 334 212 342 200 344 C 184 346 168 336 164 324 Z" fill="#2a241f"/>' +
+'<path d="M 224 316 C 222 330 210 340 198 341 C 206 344 220 342 228 332 C 232 326 232 318 228 312 Z" fill="#241f1b"/>' +
+'<ellipse cx="196" cy="318" rx="15" ry="11" fill="#1a1712" stroke="#2e2820" stroke-width="1.2"/>' +
+'<path d="M 181 314 C 176 312 173 308 174 304" stroke="#2e2820" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+'<g class="flame-g">' +
+'<path d="M 196 289 C 203 297 205 306 196 312 C 187 306 189 297 196 289 Z" fill="' + warm + '" opacity="var(--flame)" filter="url(#glow' + u + ')"/>' +
+'<path d="M 196 295 C 200 300 201 306 196 309 C 191 306 192 300 196 295 Z" fill="' + core + '" opacity="calc(var(--flame) * 0.9)"/>' +
+'<circle cx="196" cy="305" r="2" fill="#ffffff" opacity="calc(var(--flame) * 0.85)"/>' +
+'</g>' +
+'<g class="motes-warm" opacity="var(--dust)">' +
+'<circle class="mote" cx="186" cy="280" r="1.6" fill="' + core + '" style="animation-delay: 0s"/>' +
+'<circle class="mote" cx="206" cy="286" r="1.2" fill="' + core + '" style="animation-delay: 1.4s"/>' +
+'<circle class="mote" cx="192" cy="272" r="1" fill="' + core + '" style="animation-delay: 2.8s"/>' +
+'<circle class="mote" cx="212" cy="278" r="1.4" fill="' + core + '" style="animation-delay: 3.7s"/>' +
+'<circle class="mote" cx="182" cy="268" r="1" fill="' + core + '" style="animation-delay: 4.6s"/>' +
+'</g>' +
+'<g class="motes-cool" opacity="calc(var(--dust) * 0.55)">' +
+'<circle class="mote" cx="300" cy="200" r="1.2" fill="' + cool + '" style="animation-delay: 0.8s"/>' +
+'<circle class="mote" cx="316" cy="260" r="1" fill="' + cool + '" style="animation-delay: 2.2s"/>' +
+'<circle class="mote" cx="86" cy="220" r="1.1" fill="' + cool + '" style="animation-delay: 3.1s"/>' +
+'</g>' +
+'<ellipse cx="200" cy="512" rx="150" ry="18" fill="var(--fog)" opacity="calc(0.05 + var(--flame) * 0.05)"/>' +
+'</g>' +
+'</svg>'
+        );
+      }
+
+      function mount(el, stage, theme) {
+        uid += 1;
+        el.innerHTML = '<div class="portrait ' + theme + ' st' + stage + '">' + svg(uid) + "</div>";
+      }
+
+      var mainBox = root.querySelector("#ds-main");
+      var strip = root.querySelector("#ds-strip");
+      var slider = root.querySelector("#ds-slider");
+      var stageName = root.querySelector("#ds-stage-name");
+      var themeButtons = root.querySelectorAll(".ds-theme");
+      var currentTheme = "t-azure";
+
+      var minis = [];
+      for (var s = 0; s <= 4; s += 1) {
+        var cell = document.createElement("div");
+        cell.className = "ds-mini";
+        var holder = document.createElement("div");
+        var cap = document.createElement("p");
+        cap.className = "ds-mini-cap";
+        cap.innerHTML = "<b>" + STAGES[s] + "</b><br>" + FRAGS[s] + "记忆";
+        cell.append(holder, cap);
+        strip.append(cell);
+        minis.push(holder);
+      }
+
+      function renderAll(stage) {
+        mount(mainBox, stage, currentTheme);
+        minis.forEach(function (holder, i) { mount(holder, i, currentTheme); });
+      }
+
+      function renderStage(stage) {
+        var portrait = mainBox.querySelector(".portrait");
+        portrait.className = "portrait " + currentTheme + " st" + stage;
+        stageName.textContent = STAGES[stage];
+      }
+
+      slider.addEventListener("input", function () { renderStage(Number(slider.value)); });
+      Array.prototype.forEach.call(themeButtons, function (btn) {
+        btn.addEventListener("click", function () {
+          currentTheme = btn.dataset.theme;
+          Array.prototype.forEach.call(themeButtons, function (b) {
+            b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+          });
+          renderAll(Number(slider.value));
+        });
+      });
+
+      renderAll(1);
+    })();
+  </script>
+</div>

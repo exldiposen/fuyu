@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG 抽卡结果 · 第一轮</title>
+<style>
+  :root {
+    --bg: #060a12;
+    --card: #0c1320;
+    --line: rgba(216, 221, 232, 0.14);
+    --ink: #d8dee8;
+    --dim: #93a0b4;
+    --warm: #f2c777;
+    --ok: #7fd8a8;
+    --bad: #e08a8a;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.7;
+    padding: 28px clamp(14px, 4vw, 48px) 60px;
+  }
+  header { max-width: 1100px; margin: 0 auto 26px; }
+  .kicker { font-size: 11px; letter-spacing: 0.32em; color: var(--dim); }
+  h1 { font-size: clamp(20px, 3vw, 26px); font-weight: 500; letter-spacing: 0.12em; margin: 6px 0 4px; }
+  .sub { color: var(--dim); font-size: 13px; }
+  .grid { max-width: 1100px; margin: 0 auto; display: grid; gap: 22px; }
+  .shot {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .shot img { width: 100%; display: block; }
+  .meta { padding: 14px 18px 16px; }
+  .meta h2 { font-size: 15px; font-weight: 500; letter-spacing: 0.08em; }
+  .meta h2 .score { float: right; font-size: 13px; }
+  .score.ok { color: var(--ok); }
+  .score.mid { color: var(--warm); }
+  .score.bad { color: var(--bad); }
+  .meta p { color: var(--dim); font-size: 13px; margin-top: 6px; }
+  .meta p b { color: var(--ink); font-weight: 500; }
+  footer { max-width: 1100px; margin: 30px auto 0; color: var(--dim); font-size: 12px; border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+</head>
+<body>
+  <header>
+    <p class="kicker">FUYU · NINE LAMPS — CG PIPELINE TEST</p>
+    <h1>CG 抽卡结果 · 第一轮</h1>
+    <p class="sub">全部由我直接调用免费 AI 绘图接口生成，存于 assets/cg/，你零操作。以下是三张测试图的结论。</p>
+  </header>
+
+  <main class="grid">
+    <figure class="shot">
+      <img src="../../assets/cg/dengli-face-v1.jpg" alt="灯璃近景测试：垂目少女捧灯，灯下暖光照脸">
+      <figcaption class="meta">
+        <h2>测试一 · 她的脸（成败关键） <span class="score ok">8.5 / 10 · 过关</span></h2>
+        <p>垂目、忧郁、灯下暖光自下而上照亮面部——<b>就是灯璃本人</b>。五官精致无崩坏，冷雾背景 + 冷暖对比准确命中人设。这张证明了「美少女」可行。</p>
+      </figcaption>
+    </figure>
+
+    <figure class="shot">
+      <img src="../../assets/cg/cg-prologue-v1.jpg" alt="序章氛围测试：雾海孤舟剪影，天光逆光">
+      <figcaption class="meta">
+        <h2>测试二 · 序章氛围 <span class="score ok">8.5 / 10 · 过关</span></h2>
+        <p>雾海孤舟、逆光剪影、电影级构图，无可见瑕疵。<b>氛围 CG 这个模型很强</b>。内容没完全按提示词（画成了单人），对策是构图写成单主体。</p>
+      </figcaption>
+    </figure>
+
+    <figure class="shot">
+      <img src="../../assets/cg/duo-v1.jpg" alt="双人构图测试：雾海小舟上两个剪影，面部模糊">
+      <figcaption class="meta">
+        <h2>测试三 · 双人构图（弱项） <span class="score mid">5 / 10 · 需绕开</span></h2>
+        <p>两个人物时面部模糊、提示词服从度下降。<b>对策</b>：关键 CG 全部按「单主体 + 氛围」设计——她与少年同框的时刻，用她的<b>光</b>占据画面（光源即她），而不是画两张清楚的脸。这本来就更贴暗调美术。</p>
+      </figcaption>
+    </figure>
+  </main>
+
+  <footer>
+    管线：Pollinations 免费接口（每 45 秒一张）→ 我抽卡挑图 → assets/cg/ → 游戏接入。水印用裁边处理。整套 8–10 张 CG 预计抽卡 15–25 分钟。
+  </footer>
+</body>
+</html>

@@ -89,7 +89,7 @@ v1.0 的格式比 v0.1 多了规则机制：条件、代价、回声、折页、
 | `chartPos` | 海图岛必填 | `[x, y]`，0–100，海图上的位置 |
 | `center` | 否 | `true` 表示中央灯塔；全游戏只能有一座 |
 | `requires` | 否 | 上岛条件，如 `{ "visited": 4 }` 表示至少靠岸四座岛 |
-| `mood` | 否 | 海面氛围：`prologue` `silent` `windless` `echo` `nameless` `scale` `paper` `tide` `finale` |
+| `mood` | 否 | 海面氛围：`prologue` `silent` `windless` `echo` `nameless` `scale` `paper` `tide` `vow` `fold` `finale` |
 | `rule` | 是* | 这座岛的规则，一句话写清，克制、不解释 |
 | `start` | 是 | 起始场景 id |
 | `scenes` | 是 | 场景表，见下 |
@@ -115,11 +115,14 @@ v1.0 的格式比 v0.1 多了规则机制：条件、代价、回声、折页、
 
 在 `echo: true` 的场景里，玩家第一次点某个选项只会留下“余音”，再点同一个选项
 才会真正走过。换一个选项会改变余音落在哪里。适合“重复才算数”的规则。
+回声阶整座岛都是回声；重诺屿把回声与 `cost` 叠在同一个选项上
+（先听见、再许愿、再付代价）；叠浪把回声放在折页之后的路上。
 
 ### 关于 `fold`
 
 `fold` 场景可以没有普通 `choices`。页面会显示 `label` 按钮；点下后，
 场景换成 `fold.text`，并显示 `fold.choices`。适合“折一下世界”的规则。
+纸月折的是天，叠浪折的是海；同一个机制，两种故事。
 
 ## 选项字段
 

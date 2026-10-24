@@ -4,11 +4,18 @@
  *   npm run validate
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
-const data = JSON.parse(
-  readFileSync(new URL("../data/worlds.json", import.meta.url), "utf8")
-);
+// 可传入内容文件：node scripts/validate.mjs data/worlds.v2.json
+const target = process.argv[2]
+  ? resolve(process.cwd(), process.argv[2])
+  : fileURLToPath(new URL("../data/worlds.json", import.meta.url));
+const data = JSON.parse(readFileSync(target, "utf8"));
+const cgRoot = fileURLToPath(new URL("../assets/cg/", import.meta.url));
+const cgFile = (id) => `${cgRoot}cg-${id}.jpg`;
+console.log(`内容文件：${target.includes("worlds.v2") ? "worlds.v2（九灯）" : "worlds（现行书）"}`);
 
 const errors = [];
 const warnings = [];
@@ -19,10 +26,10 @@ const warn = (message) => warnings.push(message);
 
 const MOODS = new Set([
   "prologue", "silent", "windless", "echo", "nameless", "scale",
-  "paper", "tide", "finale", "chart",
+  "paper", "tide", "vow", "fold", "finale", "chart",
 ]);
 const ENDING_TONES = new Set(["home", "keeper", "drift", "nameless"]);
-const SCENE_KEYS = new Set(["text", "choices", "fragment", "note", "learnRule", "echo", "fold", "enter", "ending", "returnLost"]);
+const SCENE_KEYS = new Set(["text", "choices", "fragment", "note", "learnRule", "echo", "fold", "enter", "ending", "returnLost", "cg"]);
 const CHOICE_KEYS = new Set(["label", "to", "hint", "requires", "onlyIf", "cost", "takeFragment", "effects", "note", "ending"]);
 const REQUIRE_KEYS = new Set(["minFragments", "hasFragments", "flags", "notFlags", "notes", "visited"]);
 const WORLD_KEYS = new Set(["id", "name", "en", "whisper", "chart", "chartPos", "center", "requires", "mood", "rule", "start", "scenes"]);
@@ -52,6 +59,9 @@ for (const ending of data.endings || []) {
   }
   if (ending.tone && !ENDING_TONES.has(ending.tone)) {
     warn(`结局 ${ending.id} 的 tone 未定义：${ending.tone}`);
+  }
+  if (ending.cg && !existsSync(cgFile(ending.cg))) {
+    fail(`结局 ${ending.id} 引用的 CG 不存在：assets/cg/cg-${ending.cg}.jpg`);
   }
 }
 
@@ -88,6 +98,9 @@ for (const world of worlds) {
     }
     if (scene.learnRule && !world.rule) {
       fail(`${where} 标记了 learnRule，但岛屿没有 rule`);
+    }
+    if (scene.cg && !existsSync(cgFile(scene.cg))) {
+      fail(`${where} 引用的 CG 不存在：assets/cg/cg-${scene.cg}.jpg`);
     }
     if (scene.echo && scene.fold) {
       warn(`${where} 同时使用 echo 与 fold，体验可能冲突`);

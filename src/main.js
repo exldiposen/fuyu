@@ -33,6 +33,15 @@ import {
   loadSoundPref,
   saveSoundPref,
 } from "./save.js";
+import {
+  shouldCutIn,
+  normalizeCutInMode,
+  cutInModeLabel,
+  chartHintText,
+} from "./flow.js";
+import { downloadConstellationChart } from "./share.js";
+
+const CUT_IN_KEY = "fuyu-cutin-v1";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -52,6 +61,9 @@ const refs = {
   cutIn: $("#cut-in"),
   cutInWord: $("#cut-in-word"),
   cutInSub: $("#cut-in-sub"),
+
+  cgLayer: $("#cg-layer"),
+  cgImage: $("#cg-image"),
 
   islandName: $("#island-name"),
   islandKicker: $("#island-kicker"),
@@ -82,10 +94,13 @@ const refs = {
 
   endingKicker: $("#ending-kicker"),
   endingTitle: $("#ending-title"),
+  endingCg: $("#ending-cg"),
   endingText: $("#ending-text"),
   endingMap: $("#ending-map"),
   endingGlyphs: $("#ending-glyphs"),
   endingStats: $("#ending-stats"),
+  endingCollection: $("#ending-collection"),
+  endingShareBtn: $("#ending-share-btn"),
   endingRestartBtn: $("#ending-restart-btn"),
   endingJournalBtn: $("#ending-journal-btn"),
   endingTitleBtn: $("#ending-title-btn"),
@@ -119,7 +134,25 @@ let voyageTimer = 0;
 let cutInTimer = 0;
 let autoAudioPending = loadSoundPref();
 let currentStyle = loadStyle();
+let cutInMode = loadCutInMode();
 applyStyle(currentStyle);
+
+function loadCutInMode() {
+  try {
+    return normalizeCutInMode(localStorage.getItem(CUT_IN_KEY));
+  } catch {
+    return "all";
+  }
+}
+
+function saveCutInMode(mode) {
+  cutInMode = normalizeCutInMode(mode);
+  try {
+    localStorage.setItem(CUT_IN_KEY, cutInMode);
+  } catch {
+    /* 隐私模式下不落盘，本页仍生效 */
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* 内容整理                                                            */
@@ -171,8 +204,9 @@ function voyage() {
   }, 1200);
 }
 
-function cutIn(word, sub = "FUYU") {
-  if (!refs.cutIn || currentStyle === "calm") return;
+function cutIn(word, sub = "FUYU", kind = "minor") {
+  if (!refs.cutIn) return;
+  if (!shouldCutIn(kind, { style: currentStyle, mode: cutInMode })) return;
   refs.cutInWord.textContent = word;
   refs.cutInSub.textContent = sub;
   refs.cutIn.classList.remove("show");
@@ -182,6 +216,26 @@ function cutIn(word, sub = "FUYU") {
   cutInTimer = window.setTimeout(() => {
     refs.cutIn.classList.remove("show");
   }, 1000);
+}
+
+/* 全屏 CG：进入标注了 cg 的场景时展示，点击 / 回车收起 */
+let cgOpen = false;
+
+function showCg(id) {
+  if (!refs.cgLayer || !id) return;
+  refs.cgImage.src = `assets/cg/cg-${id}.jpg`;
+  refs.cgImage.alt = "";
+  refs.cgLayer.classList.remove("hidden");
+  // 用定时器而非 rAF：后台标签页里 rAF 会被挂起，CG 会迟迟不显形
+  window.setTimeout(() => refs.cgLayer.classList.add("show"), 30);
+  cgOpen = true;
+}
+
+function dismissCg() {
+  if (!cgOpen) return;
+  cgOpen = false;
+  refs.cgLayer.classList.remove("show");
+  window.setTimeout(() => refs.cgLayer.classList.add("hidden"), 440);
 }
 
 function scrollTop(smooth = true) {
@@ -310,6 +364,7 @@ function showGame(snapshot) {
   if (lastSceneKey !== sceneKey) {
     lastSceneKey = sceneKey;
     scrollTop();
+    if (snapshot.scene.cg) showCg(snapshot.scene.cg);
     window.setTimeout(() => {
       if (isModalOpen()) return; // 代价选择器打开时，不要抢走焦点
       refs.sceneText.focus({ preventScroll: true });
@@ -318,7 +373,7 @@ function showGame(snapshot) {
   lastIslandId = island.id;
 }
 
-function showChart(snapshot, readOnly) {
+function showChart(snapshot, readOnly, options = {}) {
   chartReadOnly = readOnly;
   applyMood("chart");
   showScreen("chart");
@@ -330,22 +385,20 @@ function showChart(snapshot, readOnly) {
     onLocked: (message) => toast(message || "雾还没有散。"),
   });
 
-  const center = snapshot.chart.find((node) => node.center);
-  const bits = [`已靠岸 ${snapshot.stats.islands} / ${snapshot.stats.totalIslands} 座岛。`];
-  if (readOnly) {
-    bits.unshift("你还在岛上。回到海图之后才能起航。");
-  } else if (center?.locked) {
-    bits.unshift("灯塔还藏在雾里。至少靠岸四座岛，它才会亮起来。");
-  } else if (center && !center.visited) {
-    bits.unshift("灯塔亮了。你可以现在就去，也可以先把剩下的岛走完。");
-  } else {
-    bits.unshift("你回到海图。灯塔仍然亮着。");
-  }
-  refs.chartHint.textContent = bits.join(" ");
+  refs.chartHint.textContent = chartHintText({
+    readOnly,
+    center: snapshot.chart.find((node) => node.center) || null,
+    islands: snapshot.stats.islands,
+    totalIslands: snapshot.stats.totalIslands,
+  });
 
   refs.chartBackBtn.textContent = readOnly ? "返回岛屿" : "离开海图";
   updateSoundButton();
 
+  if (options.focus) {
+    const heading = refs.chartScreen.querySelector(".chart-head h2");
+    heading?.focus({ preventScroll: true });
+  }
   if (engine?.screen === "chart") persist();
 }
 
@@ -369,7 +422,7 @@ function showEnding(snapshot) {
     allEndings,
   });
   showScreen("ending");
-  cutIn(ending.title, "ENDING");
+  cutIn(ending.title, "ENDING", "ending");
   scrollTop(false);
   refs.endingTitle.tabIndex = -1;
   window.setTimeout(() => refs.endingTitle.focus({ preventScroll: true }), 80);
@@ -403,7 +456,7 @@ function choose(index) {
   else if (after.scene?.echo && after.scene.echoPending === index) audio?.chime("echo");
 
   render();
-  if (gained) cutIn("记忆", "MEMORY");
+  if (gained) cutIn("记忆", "MEMORY", "memory");
 
   // 回声尚未落下时，把焦点还给同一步，方便键盘再走一次
   if (after.scene?.echo && after.scene.echoPending === index) {
@@ -421,7 +474,7 @@ function openCostPicker(pending) {
       engine.choose(pending.index, { fragmentId });
       audio?.chime("fragment");
       render();
-      cutIn("代价", "SACRIFICE");
+      cutIn("代价", "SACRIFICE", "cost");
     },
     onCancel: () => {
       engine.clearPendingCost();
@@ -436,7 +489,7 @@ function fold() {
   engine.fold();
   audio?.chime("choice");
   render();
-  cutIn("折", "FOLD");
+  cutIn("折", "FOLD", "fold");
   refs.choices.querySelector("button")?.focus();
 }
 
@@ -452,7 +505,8 @@ function travel(islandId) {
   audio?.chime("arrival");
   voyage();
   render();
-  cutIn(after.island?.name || "靠岸", "ARRIVAL");
+  const kind = before.visited.includes(islandId) ? "arrival" : "arrival-new";
+  cutIn(after.island?.name || "靠岸", "ARRIVAL", kind);
 }
 
 function startRun() {
@@ -465,7 +519,7 @@ function startRun() {
   lastSceneKey = null;
   voyage();
   render();
-  cutIn("起航", "DEPARTURE");
+  cutIn("起航", "DEPARTURE", "depart");
 }
 
 function continueRun() {
@@ -481,7 +535,7 @@ function continueRun() {
   lastIslandId = null;
   voyage();
   render();
-  cutIn("接续", "CONTINUE");
+  cutIn("接续", "CONTINUE", "continue");
   if (loaded.legacy) {
     toast("已接续 v0.1 的航行。");
   }
@@ -493,7 +547,7 @@ function openTitle() {
   applyMood("prologue");
   document.title = "浮屿 · Fuyu";
   showScreen("title");
-  renderTitle(refs, { meta, allFragments, links });
+  renderTitle(refs, { meta, allFragments, links, allEndings });
   updateStyleButtons();
   refs.startBtn.textContent = meta.endings.length ? "再一次起航" : "起航";
   refs.continueBtn.classList.toggle("hidden", !hasRun());
@@ -549,12 +603,31 @@ function handleRestart() {
 }
 
 /* ------------------------------------------------------------------ */
+/* 星图分享                                                            */
+/* ------------------------------------------------------------------ */
+
+function shareConstellationChart(title) {
+  const snapshot = engine?.snapshot();
+  const foundIds = snapshot
+    ? snapshot.fragments.map((fragment) => fragment.id)
+    : meta.fragments;
+  const ok = downloadConstellationChart({
+    allFragments,
+    foundIds,
+    links,
+    title: title || "记忆星图",
+    subtitle: `记忆 ${foundIds.length} / ${allFragments.length} · 结局 ${meta.endings.length} / ${allEndings.length}`,
+  });
+  toast(ok ? "星图已带走。去看看下载。" : "这张星图没能带走。");
+}
+
+/* ------------------------------------------------------------------ */
 /* 海图、日志、结局的往返                                              */
 /* ------------------------------------------------------------------ */
 
 function openChartFromGame() {
   if (!engine || engine.screen !== "game") return;
-  showChart(engine.snapshot(), true);
+  showChart(engine.snapshot(), true, { focus: true });
 }
 
 function chartBack() {
@@ -578,9 +651,11 @@ function openJournal(origin) {
     meta: { ...meta, allEndings },
     allFragments,
     links,
+    onShare: () => shareConstellationChart("记忆星图"),
   });
   showScreen("journal");
   document.title = "航海日志 · 浮屿";
+  refs.journalTabs.querySelector(`[data-tab="${currentTab}"]`)?.focus();
   scrollTop(false);
 }
 
@@ -651,6 +726,38 @@ function setupAutoAudio() {
 /* 帮助                                                                */
 /* ------------------------------------------------------------------ */
 
+function buildCutInToggle() {
+  const wrap = document.createElement("section");
+  wrap.className = "help-section help-cutin";
+  const h = document.createElement("h4");
+  h.textContent = "转场动画";
+  const p = document.createElement("p");
+  p.textContent = "潮红与深蓝的漫画式转场。觉得吵的话，可以只留关键时刻。";
+  const row = document.createElement("div");
+  row.className = "cutin-toggle";
+  row.setAttribute("role", "group");
+  row.setAttribute("aria-label", "转场动画频率");
+  for (const mode of ["all", "key"]) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn ghost cutin-option";
+    button.dataset.mode = mode;
+    button.textContent = cutInModeLabel(mode);
+    button.setAttribute("aria-pressed", cutInMode === mode ? "true" : "false");
+    button.addEventListener("click", () => {
+      saveCutInMode(mode);
+      button.blur();
+      row.querySelectorAll("[data-mode]").forEach((node) => {
+        node.setAttribute("aria-pressed", node.dataset.mode === cutInMode ? "true" : "false");
+      });
+      toast(`转场 · ${cutInModeLabel(cutInMode)}`);
+    });
+    row.append(button);
+  }
+  wrap.append(h, p, row);
+  return wrap;
+}
+
 function openHelp() {
   const body = document.createElement("div");
   body.className = "help-body";
@@ -658,8 +765,8 @@ function openHelp() {
     ["怎么航行", "读，观察，然后在关键处做出选择。数字键 1–9 也可以选。"],
     ["规则", "每座岛都藏着一条规则。它不会主动解释自己；看懂它，路才会出现。"],
     ["代价", "有些岛会收走你的一块记忆。被拿走的，不一定永远失去。"],
-    ["回声", "在回声阶，同一步要走两次。第一次是脚步，第二次才算走过。"],
-    ["折页", "在纸月，有些路要先把天折起来才会出现。"],
+    ["回声", "有的岛要把同一步走两次。第一次是脚步，第二次才算走过。"],
+    ["折页", "有的岛要先把天或海折起来，路才会从折痕里出现。"],
     ["界面风格", "静海 / 潮红 / 深蓝。标题页、页脚的「风格」或 T 键随时切换。"],
     ["快捷键", "1–9 选择 · J 日志 · M 海图 · S 环境声 · T 风格 · Esc 返回 · ? 本页"],
     ["保存", "进度自动保存在这台设备的浏览器里。清理站点数据会把它一起清掉。"],
@@ -674,6 +781,7 @@ function openHelp() {
     section.append(h, p);
     body.append(section);
   }
+  body.append(buildCutInToggle());
   openModal({
     title: "航行须知",
     body,
@@ -691,6 +799,14 @@ function isModalOpen() {
 }
 
 function onKeydown(event) {
+  if (cgOpen) {
+    if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
+      dismissCg();
+      event.preventDefault();
+    }
+    return;
+  }
+
   if (event.key === "Escape") {
     if (isModalOpen()) {
       closeModal();
@@ -787,14 +903,31 @@ function bind() {
     currentTab = button.dataset.tab;
     openJournal(journalReturn);
   });
+  refs.journalTabs.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+    const tabs = [...refs.journalTabs.querySelectorAll("[data-tab]")];
+    const index = tabs.indexOf(document.activeElement);
+    if (index === -1) return;
+    const delta = event.key === "ArrowRight" ? 1 : -1;
+    const next = tabs[(index + delta + tabs.length) % tabs.length];
+    next.focus();
+    next.click();
+    event.preventDefault();
+  });
 
   refs.endingRestartBtn.addEventListener("click", startRun);
+  refs.endingShareBtn.addEventListener("click", () => {
+    const ending = engine?.snapshot()?.ending;
+    shareConstellationChart(ending ? `浮屿 · ${ending.title}` : "记忆星图");
+  });
   refs.endingJournalBtn.addEventListener("click", () => openJournal("ending"));
   refs.endingTitleBtn.addEventListener("click", openTitle);
 
   $("#modal").addEventListener("click", (event) => {
     if (event.target.matches("[data-modal-close]")) closeModal();
   });
+
+  refs.cgLayer.addEventListener("click", dismissCg);
 
   document.addEventListener("keydown", onKeydown);
 }
@@ -805,7 +938,10 @@ function bind() {
 
 async function boot() {
   try {
-    const response = await fetch("data/worlds.json", { cache: "no-cache" });
+    // v2《九灯》为默认书；?book=v1 可回到第一本书
+    const bookParam = new URLSearchParams(location.search).get("book");
+    const bookFile = bookParam === "v1" ? "data/worlds.json" : "data/worlds.v2.json";
+    const response = await fetch(bookFile, { cache: "no-cache" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     data = await response.json();
   } catch (error) {
@@ -843,6 +979,10 @@ async function boot() {
       },
       start: startRun,
       style: setStyle,
+      cutin(mode) {
+        saveCutInMode(mode);
+        return cutInMode;
+      },
       title: openTitle,
       travel,
       goto(islandId) {

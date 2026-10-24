@@ -1,0 +1,106 @@
+[
+  {
+    "id": "prologue",
+    "note": "序章 · 雾海孤舟捧火的少年（横幅）",
+    "prompt": "a lone boy silhouette on a small wooden boat at night, holding a tiny ember of light in cupped hands, vast dark foggy sea",
+    "seeds": [7, 11, 23, 31],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "bow-light",
+    "note": "登场 · 船头的光之少女（第一轮全军覆没：模型画成背光黑影。第二轮把发光要求放到提示词最前并加强）",
+    "prompt": "a glowing luminous translucent girl radiating warm golden light, her whole body and long hair made of soft light, she is the only light source in a pitch dark night sea, standing at the bow of a small wooden boat, back view, a dark boy silhouette in the stern watching her",
+    "seeds": [101, 102, 103, 104],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "dengli-face",
+    "note": "灯璃定妆 · 捧灯近景（唯一需要清晰脸的图，从这批里定一张）",
+    "prompt": "anime style close-up portrait, a gentle girl with long dark hair cupping a small glowing oil lamp, her face softly lit by warm candlelight from below, downcast melancholic eyes, faint smile",
+    "seeds": [33, 48, 52, 61, 77, 88],
+    "w": 768,
+    "h": 768
+  },
+  {
+    "id": "windless",
+    "note": "P2 · 无风之海：写满旧航迹的死水",
+    "prompt": "a dead calm sea at night covered with faint glowing old ship wakes crossing like unfinished letters, a small wooden boat with one warm lantern, vast dark",
+    "seeds": [201, 202],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "echo-stairs",
+    "note": "P2 · 回声阶：雾中石阶与钟",
+    "prompt": "a stone stairway rising into thick fog at night, faint afterimage footsteps glowing on the steps, a small bell hanging between two stone pillars at the top",
+    "seeds": [203, 204],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "ferry",
+    "note": "P2 · 无名渡：雾中渡船",
+    "prompt": "a foggy river crossing at night, a ferryman with a low bamboo hat poling a wooden boat, a softly glowing girl sitting in the bow, blurred nameless dock sign",
+    "seeds": [205, 206],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "scale-star",
+    "note": "P2 · 秤星岛：铜秤与星",
+    "prompt": "a giant brass balance scale standing on a small island at night, a glowing star hanging from one arm, rows of tiny wooden drawers at its base, dark fantasy",
+    "seeds": [207, 208],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "papermoon",
+    "note": "P2 · 纸月：折纸月亮",
+    "prompt": "a giant paper-folded moon over a dark sea at night, visible origami creases glowing softly, a road of folded paper light leading across the water to the moon",
+    "seeds": [209, 210],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "tower",
+    "note": "P3 · 第一塔：雾海巨塔一点光",
+    "prompt": "a colossal black lighthouse towering in the middle of a fog sea at night, one small warm light at its top, a tiny boat with a faint lantern approaching below",
+    "seeds": [301, 302],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "end-daybreak",
+    "note": "结局 · 拂晓",
+    "prompt": "a lighthouse at dawn, warm sunrise light breaking through dissolving fog over the calm sea, the silhouette of a long-haired girl standing in the light on the gallery, hope after long night",
+    "seeds": [311, 312],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "end-nightwatch",
+    "note": "结局 · 守夜",
+    "prompt": "a small dark village by the sea at night with no lamps, one tiny warm light in a single window, quiet melancholic peace, fog far away",
+    "seeds": [313, 314],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "end-fuel",
+    "note": "结局 · 燃料",
+    "prompt": "a lighthouse blazing with intense warm light over a dark sea, the flame drifting upward forming the faint dissolving shape of a girl made of sparks, beautiful and sorrowful",
+    "seeds": [315, 316],
+    "w": 1024,
+    "h": 576
+  },
+  {
+    "id": "end-gloves",
+    "note": "结局 · 收灯",
+    "prompt": "a pair of white gloves folded neatly on top of a wooden box filled with old extinguished lamps, dark ship cabin, cold blue light, still life",
+    "seeds": [317, 318],
+    "w": 1024,
+    "h": 576
+  }
+]

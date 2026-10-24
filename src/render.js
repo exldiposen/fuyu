@@ -4,6 +4,8 @@
  * 这里只做渲染与交互接线，不持有游戏规则。
  */
 
+import { titleProgressText, endingCollectionModel, endingCollectionHint } from "./flow.js";
+
 const SVG_NS = "http://www.w3.org/2000/svg";
 const NUMERALS = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
 
@@ -330,7 +332,8 @@ export function renderChart(snapshot, refs, { readOnly = false, onTravel, onLock
 /* 航海日志                                                            */
 /* ------------------------------------------------------------------ */
 
-export function renderJournal(snapshot, refs, { tab = "fragments", meta, allFragments, links } = {}) {
+export function renderJournal(snapshot, refs, { tab = "fragments", meta, allFragments, links, onShare } = {}) {
+  refs.journalBody.setAttribute("aria-labelledby", `journal-tab-${tab}`);
   refs.journalTabs.querySelectorAll("[data-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.tab === tab);
     button.setAttribute("aria-selected", button.dataset.tab === tab ? "true" : "false");
@@ -354,6 +357,13 @@ export function renderJournal(snapshot, refs, { tab = "fragments", meta, allFrag
 
     const side = el("div", "journal-fragments-side");
     side.append(map, summary);
+    if (onShare) {
+      const share = el("button", "link journal-share");
+      share.type = "button";
+      share.textContent = "带走这张星图";
+      share.addEventListener("click", onShare);
+      side.append(share);
+    }
 
     const list = el("div", "fragment-list");
     for (const fragment of allFragments) {
@@ -442,6 +452,20 @@ export function renderEnding(snapshot, refs, { meta, allFragments, links, allEnd
   refs.endingKicker.textContent = ending.kicker || "结局";
   refs.endingTitle.textContent = ending.title;
 
+  // 结局 CG 横幅（有则展示，无则隐藏）
+  if (refs.endingCg) {
+    refs.endingCg.replaceChildren();
+    if (ending.cg) {
+      const image = el("img");
+      image.src = `assets/cg/cg-${ending.cg}.jpg`;
+      image.alt = `${ending.title} 结局插画`;
+      refs.endingCg.append(image);
+      refs.endingCg.classList.remove("hidden");
+    } else {
+      refs.endingCg.classList.add("hidden");
+    }
+  }
+
   const prose = refs.endingText;
   prose.replaceChildren();
   for (const [index, line] of (ending.text || []).entries()) {
@@ -478,6 +502,26 @@ export function renderEnding(snapshot, refs, { meta, allFragments, links, allEnd
     const owned = snapshot.fragments.some((item) => item.id === fragment.id);
     const span = el("span", `ending-glyph ${owned ? "lit" : ""}`, owned ? fragment.glyph || "◇" : "·");
     glyphs.append(span);
+  }
+
+  // 结局收藏：见过的给名字，没见的留在雾里，拉玩家再航一次
+  const collection = refs.endingCollection;
+  if (collection) {
+    collection.replaceChildren();
+    const model = endingCollectionModel(allEndings || [], meta?.endings || []);
+    if (model.total > 0) {
+      const list = el("div", "ending-collection-list");
+      for (const item of model.items) {
+        const node = el("article", `ending-collection-item ${item.seen ? "seen" : "unseen"}`);
+        node.append(
+          el("span", "ending-collection-kicker", item.kicker),
+          el("span", "ending-collection-title", item.title)
+        );
+        list.append(node);
+      }
+      collection.append(list);
+      collection.append(el("p", "ending-collection-hint", endingCollectionHint(model.remaining, model.total)));
+    }
   }
 }
 
@@ -614,7 +658,7 @@ export function toast(message, duration = 2600) {
 /* 标题页                                                              */
 /* ------------------------------------------------------------------ */
 
-export function renderTitle(refs, { meta, allFragments, links }) {
+export function renderTitle(refs, { meta, allFragments, links, allEndings = [] }) {
   renderConstellation(refs.titleConstellation, {
     allFragments,
     foundIds: meta.fragments,
@@ -622,11 +666,10 @@ export function renderTitle(refs, { meta, allFragments, links }) {
     animate: false,
   });
 
-  const discovered = allFragments.filter((fragment) => meta.fragments.includes(fragment.id)).length;
-  const endings = meta.endings.length;
-  const parts = [];
-  if (endings > 0) parts.push(`已抵达 ${endings} / 4 个结局`);
-  if (discovered > 0) parts.push(`点亮 ${discovered} / ${allFragments.length} 颗记忆之星`);
-  if (parts.length === 0) parts.push("海图在雾里，等你展开。");
-  refs.titleProgress.textContent = parts.join("　·　");
+  refs.titleProgress.textContent = titleProgressText({
+    endingsSeen: meta.endings.length,
+    endingsTotal: allEndings.length || 4,
+    fragmentsSeen: allFragments.filter((fragment) => meta.fragments.includes(fragment.id)).length,
+    fragmentsTotal: allFragments.length,
+  });
 }

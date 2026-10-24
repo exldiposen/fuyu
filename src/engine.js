@@ -118,6 +118,20 @@ class Engine {
     return null;
   }
 
+  noteById(id) {
+    for (const world of this.data.worlds) {
+      for (const scene of Object.values(world.scenes || {})) {
+        if (scene.note?.id === id) return scene.note;
+        if (scene.enter?.note?.id === id) return scene.enter.note;
+        for (const choice of scene.choices || []) {
+          const note = choice.effects?.note || choice.note;
+          if (note?.id === id) return note;
+        }
+      }
+    }
+    return null;
+  }
+
   worldFragment(world) {
     for (const scene of Object.values(world.scenes || {})) {
       if (scene.fragment) return scene.fragment;
@@ -474,6 +488,7 @@ class Engine {
             text: scene.text || [],
             echo: Boolean(scene.echo),
             echoPending: this.state.echo,
+            cg: scene.cg || null,
             fold: scene.fold
               ? {
                   label: scene.fold.label || "折起来",
@@ -509,18 +524,20 @@ class Engine {
     };
   }
 
+  // 存档只存 id 与极少的标志位，正文从 data 重新水化；
+  // 这样改动 worlds.json 的文案不会让进行中的存档停留在旧文本上。
   serialize() {
     return {
       v: SAVE_VERSION,
       state: {
         islandId: this.state.islandId,
         sceneId: this.state.sceneId,
-        fragments: this.state.fragments,
-        lost: this.state.lost,
-        notes: this.state.notes,
-        flags: this.state.flags,
-        rules: this.state.rules,
-        visited: this.state.visited,
+        fragments: this.state.fragments.map((f) => ({ id: f.id, returned: Boolean(f.returned) })),
+        lost: this.state.lost.map((f) => f.id),
+        notes: this.state.notes.map((n) => n.id),
+        flags: [...this.state.flags],
+        rules: [...this.state.rules],
+        visited: [...this.state.visited],
         ending: this.state.ending,
         steps: this.state.steps,
         atChart: this.state.atChart,
@@ -550,12 +567,31 @@ class Engine {
       return this.snapshot();
     }
 
+    // 兼容旧 v2 存档（碎片/手记存的是完整对象）与新的 id 形态
+    const entryId = (entry) => (typeof entry === "string" ? entry : entry?.id);
+    const fragments = [];
+    for (const entry of Array.isArray(state.fragments) ? state.fragments : []) {
+      const known = this.fragmentById(entryId(entry));
+      if (!known) continue; // 内容改版后消失的碎片：静默丢弃
+      fragments.push({ ...known, returned: Boolean(entry.returned) });
+    }
+    const lost = [];
+    for (const entry of Array.isArray(state.lost) ? state.lost : []) {
+      const known = this.fragmentById(entryId(entry));
+      if (known) lost.push({ ...known, returned: false });
+    }
+    const notes = [];
+    for (const entry of Array.isArray(state.notes) ? state.notes : []) {
+      const known = this.noteById(entryId(entry));
+      if (known) notes.push({ id: known.id, text: known.text });
+    }
+
     this.state = {
       islandId,
       sceneId,
-      fragments: Array.isArray(state.fragments) ? state.fragments : [],
-      lost: Array.isArray(state.lost) ? state.lost : [],
-      notes: Array.isArray(state.notes) ? state.notes : [],
+      fragments,
+      lost,
+      notes,
       flags: Array.isArray(state.flags) ? state.flags : [],
       rules: Array.isArray(state.rules) ? state.rules : [],
       visited: Array.isArray(state.visited) ? state.visited : [],

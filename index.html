@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#060b15">
-  <meta name="description" content="浮屿 · Fuyu——一款关于规则、记忆与归乡的开源网页叙事游戏。七座岛，一座灯塔，四种结局。">
+  <meta name="description" content="浮屿 · Fuyu——一款关于规则、记忆与归乡的开源网页叙事游戏。九座岛，一座灯塔，四种结局。">
   <title>浮屿 · Fuyu</title>
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
@@ -34,6 +34,10 @@
       <span id="cut-in-sub"></span>
     </div>
   </div>
+  <div id="cg-layer" class="cg-layer hidden" aria-hidden="true">
+    <img id="cg-image" alt="">
+    <p class="cg-hint">点击继续</p>
+  </div>
   <a class="skip-link" href="#main">跳到正文</a>
 
   <main id="main">
@@ -56,14 +60,14 @@
             <button type="button" data-style="crimson">潮红</button>
             <button type="button" data-style="azure">深蓝</button>
           </div>
-          <p class="title-foot">v1.2 · 静海 / 潮红 / 深蓝 · <button id="help-btn" class="link">航行须知</button></p>
+          <p class="title-foot">v1.3 · 静海 / 潮红 / 深蓝 · <button id="help-btn" class="link">航行须知</button></p>
         </div>
 
         <div class="title-poster" aria-hidden="true">
           <span class="poster-halftone"></span>
           <span class="poster-band"></span>
           <div id="title-constellation" class="title-constellation"></div>
-          <span class="poster-label">THE CHART · 七岛一塔</span>
+          <span class="poster-label">THE CHART · 九岛一塔</span>
           <span class="poster-index">01</span>
           <span class="poster-vertical">FUYU</span>
           <span class="poster-word">归乡</span>
@@ -121,8 +125,8 @@
     <section id="chart-screen" class="screen chart-screen hidden">
       <header class="chart-head">
         <p class="kicker">THE CHART</p>
-        <h2>海图</h2>
-        <p class="chart-sub">七座岛，一座灯塔。</p>
+        <h2 tabindex="-1">海图</h2>
+        <p class="chart-sub">九座岛，一座灯塔。</p>
       </header>
       <div id="chart" class="chart" role="group" aria-label="岛屿海图"></div>
       <p id="chart-hint" class="chart-hint" aria-live="polite"></p>
@@ -141,10 +145,10 @@
         <button id="journal-close-btn" class="btn ghost">关闭</button>
       </header>
       <div id="journal-tabs" class="journal-tabs" role="tablist" aria-label="日志分类">
-        <button data-tab="fragments" role="tab" aria-selected="true">记忆</button>
-        <button data-tab="rules" role="tab" aria-selected="false">规则</button>
-        <button data-tab="notes" role="tab" aria-selected="false">手记</button>
-        <button data-tab="endings" role="tab" aria-selected="false">结局</button>
+        <button id="journal-tab-fragments" data-tab="fragments" role="tab" aria-selected="true" aria-controls="journal-body">记忆</button>
+        <button id="journal-tab-rules" data-tab="rules" role="tab" aria-selected="false" aria-controls="journal-body">规则</button>
+        <button id="journal-tab-notes" data-tab="notes" role="tab" aria-selected="false" aria-controls="journal-body">手记</button>
+        <button id="journal-tab-endings" data-tab="endings" role="tab" aria-selected="false" aria-controls="journal-body">结局</button>
       </div>
       <div id="journal-body" class="journal-body" role="tabpanel"></div>
     </section>
@@ -152,12 +156,15 @@
     <section id="ending-screen" class="screen ending-screen hidden">
       <p id="ending-kicker" class="kicker ending-kicker"></p>
       <h2 id="ending-title" class="ending-title"></h2>
+      <div id="ending-cg" class="ending-cg hidden"></div>
       <div id="ending-map" class="ending-map" aria-hidden="true"></div>
       <article id="ending-text" class="ending-text"></article>
       <div id="ending-glyphs" class="ending-glyphs" aria-hidden="true"></div>
       <div id="ending-stats" class="ending-stats"></div>
+      <div id="ending-collection" class="ending-collection" aria-live="polite"></div>
       <div class="ending-actions">
         <button id="ending-restart-btn" class="btn primary">再一次起航</button>
+        <button id="ending-share-btn" class="btn ghost">带走星图</button>
         <button id="ending-journal-btn" class="btn ghost">航海日志</button>
         <button id="ending-title-btn" class="btn ghost">回到标题</button>
       </div>
